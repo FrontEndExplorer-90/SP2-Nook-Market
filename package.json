@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "build:css": "tailwindcss -i ./css/input.css -o ./css/style.css --watch",
+    "tw": "tailwindcss -i ./css/input.css -o ./css/style.css --watch",
     "prepare": "husky install"
   },
   "keywords": [],

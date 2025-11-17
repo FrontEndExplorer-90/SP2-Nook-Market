@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Register – The Nook Market</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Create an account at The Nook Market to start bidding and listing items." />
+
+    <link rel="stylesheet" href="../css/main.css" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cormorant+Garamond:wght@400;500;600&display=swap"
+        rel="stylesheet" />
+</head>
+
+<body>
+    <!-- NAVBAR -->
+    <header class="navbar navbar-expand-lg navbar-dark bg-dark bg-opacity-75 border-bottom border-secondary fixed-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-1" href="../index.html">
+                <img src="https://i.postimg.cc/HWvz0myL/Logo-The-Nook-Market-redigert-redigert-redigert.webp"
+                    alt="The Nook Market logo" class="nook-logo-img" />
+                <span class="nook-logo">THE NOOK MARKET</span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <nav class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../index.html">Browse</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./my-listings.html">My Listings</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./profile.html">Profile</a>
+                    </li>
+                    <li class="nav-item ms-lg-3">
+                        <a href="./login.html" class="btn btn-outline-light btn-sm">Log in</a>
+                    </li>
+                    <li class="nav-item ms-2">
+                        <a href="./register.html" class="btn btn-primary btn-sm active" aria-current="page">Sign up</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="nook-page d-flex align-items-center">
+        <section class="container" style="max-width: 520px">
+            <div class="nook-card-glow p-4 p-md-5">
+                <header class="mb-4 text-center">
+                    <p class="small text-secondary text-uppercase mb-1">Create account</p>
+                    <h1 class="h3 mb-2">Join The Nook Market</h1>
+                    <p class="small text-secondary mb-0">
+                        Bid on treasures, list your own, and watch your credits grow.
+                    </p>
+                </header>
+
+                <form id="register-form" novalidate>
+                    <div class="mb-3">
+                        <label for="register-name" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="register-name" name="name" required
+                            autocomplete="username" />
+                        <div class="form-text">
+                            Choose a username using only letters, numbers and underscores
+                            (for example: <code>CodingGramlin19</code>).
+                        </div>
+                        <div class="invalid-feedback">
+                            Username can only contain letters, numbers and underscores.
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="register-email" class="form-label">Contact email</label>
+                        <input type="email" class="form-control" id="register-email" name="email" required />
+                        <div class="form-text">
+                            Use your Noroff student email (ending with <code>@stud.noroff.no</code>).
+                        </div>
+                        <div class="invalid-feedback">
+                            Please enter a valid Noroff student email.
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="register-password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="register-password" name="password" required
+                            minlength="8" autocomplete="new-password" />
+                        <div class="form-text">
+                            At least 8 characters. Make it something even your enemies can’t guess.
+                        </div>
+                        <div class="invalid-feedback">
+                            Please enter a password with at least 8 characters.
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="register-confirm-password" class="form-label">Confirm password</label>
+                        <input type="password" class="form-control" id="register-confirm-password"
+                            name="confirmPassword" required minlength="8" autocomplete="new-password" />
+                        <div class="invalid-feedback">
+                            Passwords must match.
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="register-avatar" class="form-label">Avatar URL (optional)</label>
+                        <input type="url" class="form-control" id="register-avatar" name="avatar"
+                            placeholder="https://example.com/your-avatar.png" />
+                        <div class="form-text">
+                            Add an image URL if you want a custom avatar. You can change this later.
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 mt-2 mb-2">
+                        Create account
+                    </button>
+
+                    <p class="small text-secondary mb-0 text-center">
+                        Already have an account?
+                        <a href="./login.html">Log in here</a>.
+                    </p>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+</body>
+
+</html>

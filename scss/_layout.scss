@@ -1,0 +1,44 @@
+// ============================
+// Layout
+// ============================
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(168, 108, 230, 0.12), transparent 55%),
+    radial-gradient(circle at bottom right, rgba(88, 129, 87, 0.2), transparent 55%),
+    #050509;
+  color: $body-color;
+  font-family: $font-family-base;
+}
+
+.nook-page {
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+
+.nook-hero {
+  padding: 4rem 0;
+}
+
+.nook-hero-title {
+  font-size: clamp(2.6rem, 4vw, 3.4rem);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.nook-hero-subtitle {
+  max-width: 40rem;
+  opacity: 0.85;
+}
+
+// Subtle glowing card style
+.nook-card-glow {
+  background: rgba(10, 8, 16, 0.92);
+  border-radius: 1.25rem;
+  border: 1px solid rgba(250, 247, 239, 0.06);
+  box-shadow:
+    0 0 25px rgba(168, 108, 230, 0.18),
+    0 0 40px rgba(6, 9, 18, 0.95);
+  backdrop-filter: blur(8px);
+}

@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:css": "tailwindcss -i ./css/input.css -o ./css/style.css --watch",
-    "tw": "tailwindcss -i ./css/input.css -o ./css/style.css --watch",
+    "sass": "sass --watch scss/main.scss css/main.css",
     "prepare": "husky install"
   },
   "keywords": [],
@@ -15,12 +14,15 @@
   "type": "commonjs",
   "devDependencies": {
     "eslint": "^9.39.1",
-    "husky": "^9.1.7",
     "lint-staged": "^16.2.6",
     "prettier": "^3.6.2"
   },
   "lint-staged": {
     "*.js": "eslint --cache --fix",
     "*.{js,css,html}": "prettier --write"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.8",
+    "sass": "^1.94.0"
   }
 }

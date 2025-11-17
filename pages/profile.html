@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Profile – The Nook Market</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="View your profile, credits, and activity at The Nook Market."
+    />
+
+    <!-- Compiled Bootstrap + custom styles -->
+    <link rel="stylesheet" href="../css/main.css" />
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cormorant+Garamond:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- NAVBAR -->
+    <header class="navbar navbar-expand-lg navbar-dark bg-dark bg-opacity-75 border-bottom border-secondary fixed-top">
+      <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-1" href="../index.html">
+          <img
+            src="https://i.postimg.cc/HWvz0myL/Logo-The-Nook-Market-redigert-redigert-redigert.webp"
+            alt="The Nook Market logo"
+            class="nook-logo-img"
+          />
+          <span class="nook-logo">THE NOOK MARKET</span>
+        </a>
+
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#mainNav"
+          aria-controls="mainNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <nav class="collapse navbar-collapse" id="mainNav">
+          <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+            <li class="nav-item">
+              <a class="nav-link" href="../index.html">Browse</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="./my-listings.html">My Listings</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="./profile.html">Profile</a>
+            </li>
+            <li class="nav-item ms-lg-3">
+              <a href="./login.html" class="btn btn-outline-light btn-sm">Log in</a>
+            </li>
+            <li class="nav-item ms-2">
+              <a href="./register.html" class="btn btn-primary btn-sm">Sign up</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main class="nook-page">
+      <section class="container">
+        <div class="row g-4">
+          <!-- LEFT: Profile card -->
+          <div class="col-lg-4">
+            <section class="nook-card-glow p-4 h-100" aria-label="Profile overview">
+              <p class="small text-secondary text-uppercase mb-1">Profile</p>
+              <h1 class="h4 mb-3">Account</h1>
+
+              <div class="d-flex align-items-center gap-3 mb-3">
+                <!-- Avatar placeholder – can be replaced with image later -->
+                <div
+                  id="profile-avatar"
+                  class="d-inline-flex align-items-center justify-content-center rounded-circle border border-secondary-subtle"
+                  style="
+                    width: 64px;
+                    height: 64px;
+                    background: radial-gradient(circle, #f9e0b8, #8b3a3a);
+                    font-weight: 600;
+                    font-size: 1.2rem;
+                  "
+                  aria-hidden="true"
+                >
+                  FE
+                </div>
+                <div>
+                  <div class="small text-secondary">Username</div>
+                  <div class="fw-semibold" id="profile-username">frontEndExplorer90</div>
+                  <div class="small text-secondary" id="profile-email">placeholder@mail.com</div>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <div class="small text-secondary">Credits</div>
+                <div class="fw-semibold fs-5" id="profile-credits">120 ✧</div>
+              </div>
+
+              <div class="mb-3">
+                <div class="small text-secondary">Member since</div>
+                <div class="fw-semibold small" id="profile-joined">—</div>
+              </div>
+
+              <button type="button" class="btn btn-outline-light btn-sm w-100 mb-2" id="profile-edit-btn">
+                Edit profile
+              </button>
+              <button type="button" class="btn btn-outline-light btn-sm w-100" id="logout-btn">
+                Log out
+              </button>
+
+              <p class="small text-secondary mt-3 mb-0">
+                This information will later be loaded from the Noroff Auction API. For now, it’s just a very pretty
+                placeholder.
+              </p>
+            </section>
+          </div>
+
+          <!-- RIGHT: Stats + activity -->
+          <div class="col-lg-8">
+            <section class="nook-card-glow p-4 mb-4" aria-label="Profile stats">
+              <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <h2 class="h5 mb-0">Overview</h2>
+                <span class="small text-secondary">Synced with your auctions and bids.</span>
+              </div>
+
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <div class="h-100 border border-secondary-subtle rounded-3 p-3">
+                    <div class="small text-secondary text-uppercase mb-1">Active listings</div>
+                    <div class="fw-semibold fs-5" id="profile-active-listings">3</div>
+                    <p class="small text-secondary mb-0">Auctions currently running.</p>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="h-100 border border-secondary-subtle rounded-3 p-3">
+                    <div class="small text-secondary text-uppercase mb-1">Listings won</div>
+                    <div class="fw-semibold fs-5" id="profile-wins">5</div>
+                    <p class="small text-secondary mb-0">Treasures you’ve successfully claimed.</p>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="h-100 border border-secondary-subtle rounded-3 p-3">
+                    <div class="small text-secondary text-uppercase mb-1">Total bids</div>
+                    <div class="fw-semibold fs-5" id="profile-bids">18</div>
+                    <p class="small text-secondary mb-0">How many times you couldn’t resist.</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="nook-card-glow p-4" aria-label="Recent activity">
+              <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <h2 class="h5 mb-0">Recent activity</h2>
+                <a href="./my-listings.html" class="btn btn-outline-light btn-sm">Go to My Listings</a>
+              </div>
+
+              <ul class="list-unstyled mb-0" id="profile-activity">
+                <li class="mb-3 pb-3 border-bottom border-secondary-subtle">
+                  <p class="mb-1">
+                    <span class="fw-semibold">You created</span> a new listing:
+                    <span class="fst-italic">“Fourth Wing – signed edition”</span>.
+                  </p>
+                  <p class="small text-secondary mb-0">2 hours ago · Starting bid: 25 ✧</p>
+                </li>
+                <li class="mb-3 pb-3 border-bottom border-secondary-subtle">
+                  <p class="mb-1">
+                    <span class="fw-semibold">You placed a bid</span> on
+                    <span class="fst-italic">“Hylian mechanical keyboard”</span>.
+                  </p>
+                  <p class="small text-secondary mb-0">Yesterday · Your bid: 40 ✧</p>
+                </li>
+                <li>
+                  <p class="mb-1">
+                    <span class="fw-semibold">You won</span> the auction for
+                    <span class="fst-italic">“Velaris night-sky mug”</span>.
+                  </p>
+                  <p class="small text-secondary mb-0">3 days ago · Final bid: 19 ✧</p>
+                </li>
+              </ul>
+            </section>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Bootstrap JS + your main JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+  </body>
+</html>

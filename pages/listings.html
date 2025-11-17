@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Browse listings – The Nook Market</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Browse all active listings at The Nook Market – books, gear, collectibles and more."
+    />
+
+    <link rel="stylesheet" href="../css/main.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cormorant+Garamond:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- NAVBAR -->
+    <header
+      class="navbar navbar-expand-lg navbar-dark bg-dark bg-opacity-75 border-bottom border-secondary fixed-top"
+    >
+      <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="../index.html">
+          <img
+            src="https://i.postimg.cc/HWvz0myL/Logo-The-Nook-Market-redigert-redigert-redigert.webp"
+            alt="The Nook Market logo"
+            class="nook-logo-img"
+          />
+          <span class="nook-logo">The Nook Market</span>
+        </a>
+
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#mainNav"
+          aria-controls="mainNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <nav class="collapse navbar-collapse" id="mainNav">
+          <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+            <li class="nav-item">
+              <a class="nav-link active" href="./listings.html">Browse</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="./my-listings.html">My Listings</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="./profile.html">Profile</a>
+            </li>
+            <li class="nav-item ms-lg-3">
+              <a href="./login.html" class="btn btn-outline-light btn-sm">Log in</a>
+            </li>
+            <li class="nav-item ms-2">
+              <a href="./register.html" class="btn btn-primary btn-sm">Sign up</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main class="nook-page">
+      <section class="container">
+        <header class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+          <div>
+            <p class="small text-secondary text-uppercase mb-1">Browse</p>
+            <h1 class="h4 mb-1">All active listings</h1>
+            <p class="text-secondary mb-0">
+              Pulled straight from the Noroff Auction API. This is where the chaos lives.
+            </p>
+          </div>
+
+          <!-- simple search UI (we can wire this later) -->
+          <form class="d-flex gap-2" id="listings-search-form">
+            <input
+              type="search"
+              class="form-control form-control-sm"
+              id="listings-search-input"
+              placeholder="Search by title or description"
+              aria-label="Search listings"
+            />
+            <button class="btn btn-outline-light btn-sm" type="submit">Search</button>
+          </form>
+        </header>
+
+        <div class="row g-4" id="listings-grid">
+          <!-- JS will inject cards here -->
+        </div>
+
+        <p class="text-secondary mt-3 d-none" id="listings-empty-message">
+          No listings found. Try a different search… or come back later when someone’s summoned more stuff.
+        </p>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+  </body>
+</html>

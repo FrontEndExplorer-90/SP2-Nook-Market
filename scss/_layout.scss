@@ -13,9 +13,11 @@ body {
 }
 
 .nook-page {
-  padding-top: 4rem;
+  min-height: 100vh;
+  padding-top: 10rem;   // move content below fixed navbar
   padding-bottom: 4rem;
 }
+
 
 .nook-hero {
   padding: 4rem 0;

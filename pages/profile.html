@@ -1,196 +1,152 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>Profile – The Nook Market</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta
-      name="description"
-      content="View your profile, credits, and activity at The Nook Market."
-    />
 
-    <!-- Compiled Bootstrap + custom styles -->
-    <link rel="stylesheet" href="../css/main.css" />
+<head>
+  <meta charset="utf-8" />
+  <title>Profile – The Nook Market</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Your profile at The Nook Market – see your credits, listings and bids." />
 
-    <!-- Google Fonts -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cormorant+Garamond:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <!-- NAVBAR -->
-    <header class="navbar navbar-expand-lg navbar-dark bg-dark bg-opacity-75 border-bottom border-secondary fixed-top">
-      <div class="container">
-        <a class="navbar-brand d-flex align-items-center gap-1" href="../index.html">
-          <img
-            src="https://i.postimg.cc/HWvz0myL/Logo-The-Nook-Market-redigert-redigert-redigert.webp"
-            alt="The Nook Market logo"
-            class="nook-logo-img"
-          />
-          <span class="nook-logo">THE NOOK MARKET</span>
-        </a>
+  <link rel="stylesheet" href="../css/main.css" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cormorant+Garamond:wght@400;500;600&display=swap"
+    rel="stylesheet" />
+</head>
 
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#mainNav"
-          aria-controls="mainNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
+<body>
+  <!-- NAVBAR -->
+  <header class="navbar navbar-expand-lg navbar-dark bg-dark bg-opacity-75 border-bottom border-secondary fixed-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="../index.html">
+        <img src="https://i.postimg.cc/HWvz0myL/Logo-The-Nook-Market-redigert-redigert-redigert.webp"
+          alt="The Nook Market logo" class="nook-logo-img" />
+        <span class="nook-logo">The Nook Market</span>
+      </a>
 
-        <nav class="collapse navbar-collapse" id="mainNav">
-          <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
-            <li class="nav-item">
-              <a class="nav-link" href="../index.html">Browse</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="./my-listings.html">My Listings</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link active" href="./profile.html">Profile</a>
-            </li>
-            <li class="nav-item ms-lg-3">
-              <a href="./login.html" class="btn btn-outline-light btn-sm">Log in</a>
-            </li>
-            <li class="nav-item ms-2">
-              <a href="./register.html" class="btn btn-primary btn-sm">Sign up</a>
-            </li>
-          </ul>
-        </nav>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+        aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <nav class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+          <li class="nav-item">
+            <a class="nav-link" href="./listings.html">Browse</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="./my-listings.html">My Listings</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="./profile.html">Profile</a>
+          </li>
+
+          <!-- LOGIN / SIGNUP (shown when logged OUT) -->
+          <li class="nav-item ms-lg-3" id="nav-login-item">
+            <a href="./login.html" id="nav-login-link" class="btn btn-outline-light btn-sm">
+              Log in
+            </a>
+          </li>
+          <li class="nav-item ms-2" id="nav-register-item">
+            <a href="./register.html" id="nav-register-link" class="btn btn-primary btn-sm">
+              Sign up
+            </a>
+          </li>
+
+          <!-- CREDITS + LOGOUT (shown when logged IN) -->
+          <li class="nav-item ms-lg-3 d-none" id="nav-credits-item">
+            <span class="badge rounded-pill bg-secondary-subtle text-light">
+              <span class="small me-1">Credits</span>
+              <span id="nav-credits-amount">0 ✧</span>
+            </span>
+          </li>
+          <li class="nav-item ms-2 d-none" id="nav-logout-item">
+            <button id="logout-btn" class="btn btn-outline-light btn-sm" data-logout-btn="true">
+              Log out
+            </button>
+
+          </li>
+        </ul>
+      </nav>
+
+    </div>
+  </header>
+
+  <main class="nook-page">
+    <section class="container" id="profile-page">
+      <!-- if not logged in -->
+      <div id="profile-not-logged-in" class="alert alert-warning mt-2 d-none" role="alert">
+        You need to be logged in to view your profile. Please log in or create an
+        account.
       </div>
-    </header>
 
-    <main class="nook-page">
-      <section class="container">
-        <div class="row g-4">
-          <!-- LEFT: Profile card -->
-          <div class="col-lg-4">
-            <section class="nook-card-glow p-4 h-100" aria-label="Profile overview">
-              <p class="small text-secondary text-uppercase mb-1">Profile</p>
-              <h1 class="h4 mb-3">Account</h1>
-
-              <div class="d-flex align-items-center gap-3 mb-3">
-                <!-- Avatar placeholder – can be replaced with image later -->
-                <div
-                  id="profile-avatar"
-                  class="d-inline-flex align-items-center justify-content-center rounded-circle border border-secondary-subtle"
-                  style="
-                    width: 64px;
-                    height: 64px;
-                    background: radial-gradient(circle, #f9e0b8, #8b3a3a);
-                    font-weight: 600;
-                    font-size: 1.2rem;
-                  "
-                  aria-hidden="true"
-                >
-                  FE
-                </div>
-                <div>
-                  <div class="small text-secondary">Username</div>
-                  <div class="fw-semibold" id="profile-username">frontEndExplorer90</div>
-                  <div class="small text-secondary" id="profile-email">placeholder@mail.com</div>
-                </div>
-              </div>
-
-              <div class="mb-3">
-                <div class="small text-secondary">Credits</div>
-                <div class="fw-semibold fs-5" id="profile-credits">120 ✧</div>
-              </div>
-
-              <div class="mb-3">
-                <div class="small text-secondary">Member since</div>
-                <div class="fw-semibold small" id="profile-joined">—</div>
-              </div>
-
-              <button type="button" class="btn btn-outline-light btn-sm w-100 mb-2" id="profile-edit-btn">
-                Edit profile
-              </button>
-              <button type="button" class="btn btn-outline-light btn-sm w-100" id="logout-btn">
-                Log out
-              </button>
-
-              <p class="small text-secondary mt-3 mb-0">
-                This information will later be loaded from the Noroff Auction API. For now, it’s just a very pretty
-                placeholder.
-              </p>
-            </section>
-          </div>
-
-          <!-- RIGHT: Stats + activity -->
-          <div class="col-lg-8">
-            <section class="nook-card-glow p-4 mb-4" aria-label="Profile stats">
-              <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                <h2 class="h5 mb-0">Overview</h2>
-                <span class="small text-secondary">Synced with your auctions and bids.</span>
-              </div>
-
-              <div class="row g-3">
-                <div class="col-md-4">
-                  <div class="h-100 border border-secondary-subtle rounded-3 p-3">
-                    <div class="small text-secondary text-uppercase mb-1">Active listings</div>
-                    <div class="fw-semibold fs-5" id="profile-active-listings">3</div>
-                    <p class="small text-secondary mb-0">Auctions currently running.</p>
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <div class="h-100 border border-secondary-subtle rounded-3 p-3">
-                    <div class="small text-secondary text-uppercase mb-1">Listings won</div>
-                    <div class="fw-semibold fs-5" id="profile-wins">5</div>
-                    <p class="small text-secondary mb-0">Treasures you’ve successfully claimed.</p>
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <div class="h-100 border border-secondary-subtle rounded-3 p-3">
-                    <div class="small text-secondary text-uppercase mb-1">Total bids</div>
-                    <div class="fw-semibold fs-5" id="profile-bids">18</div>
-                    <p class="small text-secondary mb-0">How many times you couldn’t resist.</p>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <section class="nook-card-glow p-4" aria-label="Recent activity">
-              <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                <h2 class="h5 mb-0">Recent activity</h2>
-                <a href="./my-listings.html" class="btn btn-outline-light btn-sm">Go to My Listings</a>
-              </div>
-
-              <ul class="list-unstyled mb-0" id="profile-activity">
-                <li class="mb-3 pb-3 border-bottom border-secondary-subtle">
-                  <p class="mb-1">
-                    <span class="fw-semibold">You created</span> a new listing:
-                    <span class="fst-italic">“Fourth Wing – signed edition”</span>.
-                  </p>
-                  <p class="small text-secondary mb-0">2 hours ago · Starting bid: 25 ✧</p>
-                </li>
-                <li class="mb-3 pb-3 border-bottom border-secondary-subtle">
-                  <p class="mb-1">
-                    <span class="fw-semibold">You placed a bid</span> on
-                    <span class="fst-italic">“Hylian mechanical keyboard”</span>.
-                  </p>
-                  <p class="small text-secondary mb-0">Yesterday · Your bid: 40 ✧</p>
-                </li>
-                <li>
-                  <p class="mb-1">
-                    <span class="fw-semibold">You won</span> the auction for
-                    <span class="fst-italic">“Velaris night-sky mug”</span>.
-                  </p>
-                  <p class="small text-secondary mb-0">3 days ago · Final bid: 19 ✧</p>
-                </li>
-              </ul>
-            </section>
-          </div>
+      <!-- PROFILE HEADER -->
+      <header class="nook-card-glow p-4 mb-4 d-flex flex-wrap gap-3 align-items-center">
+        <div id="profile-avatar" class="nook-avatar-circle d-flex align-items-center justify-content-center">
+          <span class="fw-semibold">NM</span>
         </div>
-      </section>
-    </main>
+        <div class="flex-grow-1">
+          <h1 class="h3 mb-1" id="profile-username">Adventurer</h1>
+          <p class="small text-secondary mb-1" id="profile-email">email@stud.noroff.no</p>
+          <p class="small text-secondary mb-0">
+            Keeper of treasures, spender of credits, collector of questionable items.
+          </p>
+        </div>
+        <div class="text-end ms-auto">
+          <p class="small text-secondary mb-1">Credits</p>
+          <p class="fs-4 fw-semibold mb-2" id="profile-credits">0 ✧</p>
+          <button id="logout-btn" class="btn btn-outline-light btn-sm">
+            Log out
+          </button>
+        </div>
+      </header>
 
-    <!-- Bootstrap JS + your main JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../js/main.js"></script>
-  </body>
+      <div class="row g-4">
+        <!-- MY LISTINGS PREVIEW -->
+        <div class="col-lg-6">
+          <section class="nook-card-glow p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h2 class="h5 mb-0">My listings</h2>
+              <a href="./my-listings.html" class="btn btn-outline-light btn-sm">
+                View all
+              </a>
+            </div>
+
+            <div class="row g-3" id="profile-my-listings">
+              <!-- JS injects up to 3 cards -->
+            </div>
+
+            <p id="profile-my-listings-empty" class="small text-secondary mb-0 d-none">
+              You don’t have any listings yet. Start by creating one from the
+              <a href="./my-listings.html" class="link-light">My Listings</a>
+              page.
+            </p>
+          </section>
+        </div>
+
+        <!-- MY BIDS -->
+        <div class="col-lg-6">
+          <section class="nook-card-glow p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h2 class="h5 mb-0">My bids</h2>
+            </div>
+
+            <ul class="list-unstyled mb-0" id="profile-my-bids">
+              <!-- JS injects bids here -->
+            </ul>
+
+            <p id="profile-my-bids-empty" class="small text-secondary mb-0 d-none">
+              You haven’t placed any bids yet. Go explore the
+              <a href="./listings.html" class="link-light">listings</a> and find
+              something tempting.
+            </p>
+          </section>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/main.js"></script>
+</body>
+
 </html>

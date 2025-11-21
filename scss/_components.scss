@@ -73,3 +73,27 @@
     box-shadow: 0 0 25px rgba(168, 108, 230, 0.3);
   }
 }
+
+// Profile avatar circle
+.nook-avatar-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  overflow: hidden;
+
+  // Pretty magical glow
+  background: radial-gradient(
+    circle at 30% 20%,
+    #f9e6ff 0,
+    #8a5cff 40%,
+    #211327 100%
+  );
+  color: #fdf8ff;
+  font-size: 1.25rem;
+  box-shadow: 0 0 25px rgba(138, 92, 255, 0.6);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

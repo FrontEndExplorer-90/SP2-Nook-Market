@@ -1,5 +1,5 @@
 // Nook Market – main.js
-// Auth (register/login/logout) + basic profile wiring for Noroff API v2
+// Auth (register/login/logout) + listings + profile wiring for Noroff API v2
 
 const API_BASE = "https://v2.api.noroff.dev";
 const AUTH_REGISTER = `${API_BASE}/auth/register`;
@@ -29,12 +29,40 @@ function clearAuth() {
   localStorage.removeItem(STORAGE_KEY_AUTH);
 }
 
+// ---------- Auth helpers ----------
+
+function getAuthUser() {
+  const auth = getAuth();
+  return auth && auth.data ? auth.data : null;
+}
+
+function getAccessToken() {
+  const auth = getAuth();
+  if (auth && auth.data && auth.data.accessToken) {
+    return auth.data.accessToken;
+  }
+  return null;
+}
+
+function getAuthHeaders(includeJson = false) {
+  const token = getAccessToken();
+  const headers = {};
+
+  if (includeJson) {
+    headers["Content-Type"] = "application/json";
+  }
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  return headers;
+}
+
 // ---------- DOM bootstrapping ----------
 
 document.addEventListener("DOMContentLoaded", () => {
   const registerForm = document.querySelector("#register-form");
   const loginForm = document.querySelector("#login-form");
-  const logoutButton = document.querySelector("#logout-btn");
 
   if (registerForm) {
     setupRegisterForm(registerForm);
@@ -44,18 +72,19 @@ document.addEventListener("DOMContentLoaded", () => {
     setupLoginForm(loginForm);
   }
 
-  if (logoutButton) {
-    logoutButton.addEventListener("click", handleLogout);
-  }
+  // Any button with data-logout-btn="true" will trigger logout
+  document
+    .querySelectorAll("[data-logout-btn='true']")
+    .forEach((btn) => btn.addEventListener("click", handleLogout));
 
   hydrateProfileFromAuth();
+  updateNavbarAuthState();
 
   loadAllListings();
-
   loadSingleListingPage();
-
   setupCreateListingForm();
-
+  loadMyListings();
+  loadProfilePage();
 });
 
 
@@ -89,8 +118,11 @@ function setupRegisterForm(form) {
       isValid = false;
     }
 
-    
-    if (!emailValue || !emailValue.includes("@") || !emailValue.endsWith("stud.noroff.no")) {
+    // must end with @stud.noroff.no or @noroff.no
+    const validDomain =
+      emailValue.endsWith("@stud.noroff.no") || emailValue.endsWith("@noroff.no");
+
+    if (!emailValue || !emailValue.includes("@") || !validDomain) {
       emailInput.classList.add("is-invalid");
       isValid = false;
     }
@@ -239,13 +271,258 @@ function setupLoginForm(form) {
   });
 }
 
+// ---------- Loading Profile ----------
+
+async function loadProfilePage() {
+  const profilePage = document.querySelector("#profile-page");
+  if (!profilePage) return; // not on profile.html
+
+  const notLoggedInAlert = document.querySelector("#profile-not-logged-in");
+
+  const user = getAuthUser();
+
+  if (!user || !user.name) {
+    if (notLoggedInAlert) {
+      notLoggedInAlert.classList.remove("d-none");
+    }
+    return;
+  }
+
+  // Top info (username/email/credits/avatar) is mostly handled by hydrateProfileFromAuth,
+  // but we can sanity-set it here in case.
+  const usernameEl = document.querySelector("#profile-username");
+  const emailEl = document.querySelector("#profile-email");
+  const creditsEl = document.querySelector("#profile-credits");
+  const avatarEl = document.querySelector("#profile-avatar");
+
+  if (usernameEl) usernameEl.textContent = user.name || "Adventurer";
+  if (emailEl) emailEl.textContent = user.email || "";
+  if (typeof user.credits === "number" && creditsEl) {
+    creditsEl.textContent = `${user.credits} ✧`;
+  }
+
+  if (avatarEl) {
+    if (user.avatar && user.avatar.url) {
+      avatarEl.style.backgroundImage = `url("${user.avatar.url}")`;
+      avatarEl.style.backgroundSize = "cover";
+      avatarEl.style.backgroundPosition = "center";
+      avatarEl.textContent = "";
+    } else {
+      avatarEl.style.backgroundImage = "";
+      avatarEl.textContent = (user.name || "NM").slice(0, 2).toUpperCase();
+    }
+  }
+
+  // Load listings + bids in parallel
+  await Promise.all([loadProfileListings(user.name), loadProfileBids(user.name)]);
+}
+
+async function loadProfileListings(username) {
+  const listContainer = document.querySelector("#profile-my-listings");
+  const emptyMessage = document.querySelector("#profile-my-listings-empty");
+
+  if (!listContainer) return;
+
+  listContainer.innerHTML = `
+    <div class="col-12">
+      <p class="text-secondary mb-0">Fetching your listings…</p>
+    </div>
+  `;
+  if (emptyMessage) emptyMessage.classList.add("d-none");
+
+  try {
+    const response = await fetch(
+      `${API_BASE}/auction/profiles/${encodeURIComponent(
+        username
+      )}/listings?_bids=true&sort=endsAt&sortOrder=asc`,
+      {
+        headers: getAuthHeaders(),
+      }
+    );
+
+    const json = await response.json();
+
+    if (!response.ok) {
+      console.error("Failed to load profile listings", json);
+      listContainer.innerHTML = `
+        <div class="col-12">
+          <p class="text-danger mb-0">Couldn’t load your listings.</p>
+        </div>
+      `;
+      return;
+    }
+
+    const listings = Array.isArray(json.data) ? json.data : [];
+
+    if (!listings.length) {
+      listContainer.innerHTML = "";
+      if (emptyMessage) emptyMessage.classList.remove("d-none");
+      return;
+    }
+
+    // Show only first 3 here as a preview
+    const preview = listings.slice(0, 3);
+
+    listContainer.innerHTML = preview
+      .map((listing) => createProfileListingCard(listing))
+      .join("");
+  } catch (error) {
+    console.error("Error loading profile listings", error);
+    listContainer.innerHTML = `
+      <div class="col-12">
+        <p class="text-danger mb-0">
+          Something went wrong while loading your listings.
+        </p>
+      </div>
+    `;
+  }
+}
+
+function createProfileListingCard(listing) {
+  const { url, alt } = getPrimaryImage(listing);
+  const highestBid = getHighestBidAmount(listing);
+  const now = new Date();
+  const ends = listing.endsAt ? new Date(listing.endsAt) : null;
+
+  let statusLabel = "Draft";
+  if (ends) {
+    if (ends > now) {
+      statusLabel = "Active · " + getEndsLabel(listing.endsAt);
+    } else {
+      statusLabel = "Ended";
+    }
+  }
+
+  const bidLabel = highestBid > 0 ? `${highestBid} ✧` : "No bids yet";
+
+  return `
+    <div class="col-12">
+      <article class="card nook-card-hover h-100 bg-transparent border border-secondary-subtle">
+        <div class="row g-0 align-items-center">
+          <div class="col-4">
+            <img
+              src="${url}"
+              class="img-fluid rounded-start nook-listing-image"
+              alt="${alt}"
+              loading="lazy"
+            />
+          </div>
+          <div class="col-8">
+            <div class="card-body py-3">
+              <p class="small text-secondary text-uppercase mb-1">
+                ${statusLabel}
+              </p>
+              <h3 class="h6 mb-1">${listing.title || "Untitled listing"}</h3>
+              <p class="small text-secondary mb-2">
+                ${truncateText(listing.description || "", 90)}
+              </p>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="small">Highest bid: <strong>${bidLabel}</strong></span>
+                <a
+                  href="./listing.html?id=${listing.id}"
+                  class="btn btn-outline-light btn-sm"
+                >
+                  View
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+  `;
+}
+
+// -------- My Bids --------
+
+async function loadProfileBids(username) {
+  const listEl = document.querySelector("#profile-my-bids");
+  const emptyMessage = document.querySelector("#profile-my-bids-empty");
+
+  if (!listEl) return;
+
+  listEl.innerHTML =
+    '<li class="small text-secondary">Fetching your bids…</li>';
+  if (emptyMessage) emptyMessage.classList.add("d-none");
+
+  try {
+    const response = await fetch(
+      `${API_BASE}/auction/profiles/${encodeURIComponent(
+        username
+      )}/bids?_listings=true&sort=created&sortOrder=desc`,
+      {
+        headers: getAuthHeaders(),
+      }
+    );
+
+    const json = await response.json();
+
+    if (!response.ok) {
+      console.error("Failed to load profile bids", json);
+      listEl.innerHTML =
+        '<li class="small text-danger">Couldn’t load your bids.</li>';
+      return;
+    }
+
+    const bids = Array.isArray(json.data) ? json.data : [];
+
+    if (!bids.length) {
+      listEl.innerHTML = "";
+      if (emptyMessage) emptyMessage.classList.remove("d-none");
+      return;
+    }
+
+    // Show a few most recent bids
+    const recent = bids.slice(0, 5);
+
+    listEl.innerHTML = recent.map((bid) => createProfileBidItem(bid)).join("");
+  } catch (error) {
+    console.error("Error loading profile bids", error);
+    listEl.innerHTML =
+      '<li class="small text-danger">Something went wrong while loading your bids.</li>';
+  }
+}
+
+function createProfileBidItem(bid) {
+  const listing = bid.listing || {};
+  const { url, alt } = getPrimaryImage(listing);
+  const date = bid.created ? new Date(bid.created) : null;
+  const dateLabel = date ? date.toLocaleString() : "";
+
+  return `
+    <li class="d-flex align-items-center gap-3 py-2 border-bottom border-secondary-subtle">
+      <img
+        src="${url}"
+        alt="${alt}"
+        class="rounded-3"
+        style="width: 56px; height: 56px; object-fit: cover;"
+      />
+      <div class="flex-grow-1">
+        <p class="small mb-1">
+          <strong>${listing.title || "Listing"}</strong>
+        </p>
+        <p class="small text-secondary mb-0">
+          Your bid: <strong>${bid.amount} ✧</strong>
+          ${dateLabel ? ` · <span>${dateLabel}</span>` : ""}
+        </p>
+      </div>
+      <div>
+        <a
+          href="./listing.html?id=${listing.id}"
+          class="btn btn-outline-light btn-sm"
+        >
+          View
+        </a>
+      </div>
+    </li>
+  `;
+}
+
 // ---------- Profile hydration ----------
 
 function hydrateProfileFromAuth() {
-  const auth = getAuth();
-  if (!auth || !auth.data) return;
-
-  const user = auth.data;
+  const user = getAuthUser();
+  if (!user) return;
 
   const usernameEl = document.querySelector("#profile-username");
   const emailEl = document.querySelector("#profile-email");
@@ -262,13 +539,20 @@ function hydrateProfileFromAuth() {
     creditsEl.textContent = `${user.credits} ✧`;
   }
 
-  if (avatarEl && user.avatar && user.avatar.url) {
-    avatarEl.style.backgroundImage = `url("${user.avatar.url}")`;
-    avatarEl.style.backgroundSize = "cover";
-    avatarEl.style.backgroundPosition = "center";
-    avatarEl.textContent = "";
+  if (avatarEl) {
+    if (user.avatar && user.avatar.url) {
+      avatarEl.style.backgroundImage = `url("${user.avatar.url}")`;
+      avatarEl.style.backgroundSize = "cover";
+      avatarEl.style.backgroundPosition = "center";
+      avatarEl.textContent = "";
+    } else {
+      // Fallback: show initials if no avatar image
+      avatarEl.style.backgroundImage = "";
+      avatarEl.textContent = (user.name || "NM").slice(0, 2).toUpperCase();
+    }
   }
 }
+
 
 // ---------- Logout + error helper ----------
 
@@ -301,6 +585,45 @@ function showFormError(form, message) {
   }
 }
 
+
+function updateNavbarAuthState() {
+  const user = getAuthUser();
+
+  const loginItem = document.querySelector("#nav-login-item");
+  const registerItem = document.querySelector("#nav-register-item");
+  const creditsItem = document.querySelector("#nav-credits-item");
+  const creditsAmount = document.querySelector("#nav-credits-amount");
+  const navLogoutItem = document.querySelector("#nav-logout-item");
+  const navLogoutBtn = document.querySelector("#nav-logout-btn");
+
+  if (!user) {
+    // Logged OUT
+    if (loginItem) loginItem.classList.remove("d-none");
+    if (registerItem) registerItem.classList.remove("d-none");
+
+    if (creditsItem) creditsItem.classList.add("d-none");
+    if (navLogoutItem) navLogoutItem.classList.add("d-none");
+
+    return;
+  }
+
+  // Logged IN
+  if (loginItem) loginItem.classList.add("d-none");
+  if (registerItem) registerItem.classList.add("d-none");
+
+  if (creditsItem) creditsItem.classList.remove("d-none");
+  if (creditsAmount) {
+    const amount = typeof user.credits === "number" ? user.credits : 0;
+    creditsAmount.textContent = `${amount} ✧`;
+  }
+
+  if (navLogoutItem) navLogoutItem.classList.remove("d-none");
+  if (navLogoutBtn) {
+    // make sure it logs out
+    navLogoutBtn.addEventListener("click", handleLogout);
+  }
+}
+ 
 // ---------- LISTINGS: helpers ----------
 
 const AUCTION_LISTINGS_URL = `${API_BASE}/auction/listings`;
@@ -391,11 +714,10 @@ function createListingCard(listing) {
               View details
             </a>
           </div>
-          ${
-            endsLabel
-              ? `<p class="small text-secondary mt-2 mb-0">${endsLabel}</p>`
-              : ""
-          }
+          ${endsLabel
+      ? `<p class="small text-secondary mt-2 mb-0">${endsLabel}</p>`
+      : ""
+    }
         </div>
       </article>
     </div>
@@ -532,7 +854,7 @@ async function loadSingleListingPage() {
 
     // Gallery
     const media = Array.isArray(listing.media) ? listing.media : [];
-    let primaryImage = getPrimaryImage(listing); // you already have this helper
+    let primaryImage = getPrimaryImage(listing);
 
     if (mainImgEl) {
       mainImgEl.src = primaryImage.url;
@@ -588,7 +910,7 @@ async function loadSingleListingPage() {
           '<li class="small text-secondary">No bids yet. Be the first to offer your credits.</li>';
       } else {
         const sorted = [...bids].sort(
-          (a, b) => new Date(b.created) - new Date(a.created)
+          (a, b) => new Date(a.created) - new Date(b.created)
         );
         sorted.forEach((bid) => {
           const li = document.createElement("li");
@@ -620,9 +942,9 @@ function setupBidForm(listingId, currentHighestBid) {
 
   if (!form || !amountInput) return;
 
-  const auth = typeof getAuth === "function" ? getAuth() : null;
+  const token = getAccessToken();
 
-  if (!auth || !auth.accessToken) {
+  if (!token) {
     form.classList.add("opacity-50");
     const button = form.querySelector("button[type='submit']");
     if (button) button.disabled = true;
@@ -653,7 +975,7 @@ function setupBidForm(listingId, currentHighestBid) {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${auth.accessToken}`,
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ amount }),
         }
@@ -665,8 +987,7 @@ function setupBidForm(listingId, currentHighestBid) {
         console.error("Bid failed", json);
         if (errorEl) {
           const msg =
-            (json.errors &&
-              json.errors.map((e) => e.message).join(" ")) ||
+            (json.errors && json.errors.map((e) => e.message).join(" ")) ||
             "Could not place bid.";
           errorEl.textContent = msg;
         }
@@ -685,12 +1006,11 @@ function setupBidForm(listingId, currentHighestBid) {
   });
 }
 
-
 // ---------- Create Listings ----------
 
 function setupCreateListingForm() {
   const form = document.querySelector("#create-listing-form");
-  if (!form) return; // not on create-listing.html
+  if (!form) return; // not on create.html
 
   const titleInput = document.querySelector("#create-title");
   const descInput = document.querySelector("#create-description");
@@ -702,15 +1022,16 @@ function setupCreateListingForm() {
   const errorEl = document.querySelector("#create-error");
 
   // Make sure user is logged in
-  const auth = typeof getAuth === "function" ? getAuth() : null;
-  if (!auth || !auth.accessToken) {
+  const token = getAccessToken();
+  if (!token) {
     if (errorEl) {
       errorEl.textContent =
         "You need to be logged in to create a listing. Please log in first.";
       errorEl.classList.remove("d-none");
     }
     form.classList.add("opacity-50");
-    form.querySelector("button[type='submit']").disabled = true;
+    const submitBtn = form.querySelector("button[type='submit']");
+    if (submitBtn) submitBtn.disabled = true;
     return;
   }
 
@@ -718,9 +1039,7 @@ function setupCreateListingForm() {
   if (endsAtInput) {
     const now = new Date();
     // For datetime-local input we use local time slice(0,16) -> YYYY-MM-DDTHH:MM
-    const localISO = new Date(
-      now.getTime() - now.getTimezoneOffset() * 60000
-    )
+    const localISO = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
       .toISOString()
       .slice(0, 16);
     endsAtInput.min = localISO;
@@ -778,7 +1097,7 @@ function setupCreateListingForm() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${auth.accessToken}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
       });
@@ -789,8 +1108,7 @@ function setupCreateListingForm() {
         console.error("Create listing failed", json);
         if (errorEl) {
           const msg =
-            (json.errors &&
-              json.errors.map((e) => e.message).join(" ")) ||
+            (json.errors && json.errors.map((e) => e.message).join(" ")) ||
             "Could not create listing.";
           errorEl.textContent = msg;
           errorEl.classList.remove("d-none");
@@ -810,4 +1128,133 @@ function setupCreateListingForm() {
       }
     }
   });
+}
+
+async function loadMyListings() {
+  const grid = document.querySelector("#my-listings-grid");
+  const emptyMessage = document.querySelector("#my-listings-empty");
+
+  if (!grid) return; // not on my-listings.html
+
+  // Get logged-in user
+  const user = getAuthUser();
+  if (!user || !user.name) {
+    grid.innerHTML = `
+      <div class="col-12">
+        <p class="text-danger mb-0">
+          You need to be logged in to see your listings.
+        </p>
+      </div>
+    `;
+    if (emptyMessage) emptyMessage.classList.add("d-none");
+    return;
+  }
+
+  const username = user.name;
+
+  grid.innerHTML = `
+    <div class="col-12">
+      <p class="text-secondary mb-0">
+        Fetching your listings from the archive…
+      </p>
+    </div>
+  `;
+  if (emptyMessage) emptyMessage.classList.add("d-none");
+
+  try {
+    const response = await fetch(
+      `${API_BASE}/auction/profiles/${encodeURIComponent(
+        username
+      )}/listings?_active=true&_bids=true&sort=endsAt&sortOrder=asc`,
+      {
+        headers: getAuthHeaders(),
+      }
+    );
+
+    const json = await response.json();
+
+    if (!response.ok) {
+      console.error("Failed to load my listings", json);
+      grid.innerHTML = `
+        <div class="col-12">
+          <p class="text-danger mb-0">
+            Couldn’t load your listings right now. Try again in a bit.
+          </p>
+        </div>
+      `;
+      return;
+    }
+
+    const listings = Array.isArray(json.data) ? json.data : [];
+
+    if (!listings.length) {
+      grid.innerHTML = "";
+      if (emptyMessage) emptyMessage.classList.remove("d-none");
+      return;
+    }
+
+    grid.innerHTML = listings.map(createMyListingCard).join("");
+  } catch (error) {
+    console.error("Error loading my listings", error);
+    grid.innerHTML = `
+      <div class="col-12">
+        <p class="text-danger mb-0">
+          Something went wrong while loading your listings.
+        </p>
+      </div>
+    `;
+  }
+}
+
+function createMyListingCard(listing) {
+  const { url, alt } = getPrimaryImage(listing);
+  const highestBid = getHighestBidAmount(listing);
+  const now = new Date();
+  const ends = listing.endsAt ? new Date(listing.endsAt) : null;
+
+  let statusLabel = "Draft";
+  if (ends) {
+    if (ends > now) {
+      statusLabel = "Active · " + getEndsLabel(listing.endsAt);
+    } else {
+      statusLabel = "Ended";
+    }
+  }
+
+  const bidLabel = highestBid > 0 ? `${highestBid} ✧` : "No bids yet";
+
+  return `
+    <div class="col-md-6 col-lg-4">
+      <article class="card nook-card-hover h-100 bg-transparent border border-secondary-subtle">
+        <img
+          src="${url}"
+          class="card-img-top nook-listing-image"
+          alt="${alt}"
+          loading="lazy"
+        />
+        <div class="card-body d-flex flex-column">
+          <p class="small text-secondary text-uppercase mb-1">
+            ${statusLabel}
+          </p>
+          <h2 class="h5 mb-2">${listing.title || "Untitled listing"}</h2>
+          <p class="small text-secondary flex-grow-1">
+            ${truncateText(listing.description || "", 140)}
+          </p>
+          <div class="d-flex justify-content-between align-items-center mt-3">
+            <div>
+              <div class="small text-secondary">Highest bid</div>
+              <div class="fw-semibold">${bidLabel}</div>
+            </div>
+            <div class="btn-group">
+              <a href="./listing.html?id=${listing.id}" class="btn btn-outline-light btn-sm">
+                View
+              </a>
+              <!-- Edit page can be added later -->
+              <!-- <a href="./edit.html?id=${listing.id}" class="btn btn-outline-light btn-sm">Edit</a> -->
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+  `;
 }

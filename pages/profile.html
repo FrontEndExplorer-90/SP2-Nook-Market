@@ -54,17 +54,17 @@
 
           <!-- CREDITS + LOGOUT (shown when logged IN) -->
           <li class="nav-item ms-lg-3 d-none" id="nav-credits-item">
-            <span class="badge rounded-pill bg-secondary-subtle text-light">
+            <span class="nook-credits-pill">
               <span class="small me-1">Credits</span>
               <span id="nav-credits-amount">0 ✧</span>
             </span>
           </li>
           <li class="nav-item ms-2 d-none" id="nav-logout-item">
-            <button id="logout-btn" class="btn btn-outline-light btn-sm" data-logout-btn="true">
+            <button class="btn btn-outline-light btn-sm" data-logout-btn="true">
               Log out
             </button>
-
           </li>
+
         </ul>
       </nav>
 
@@ -93,14 +93,19 @@
         </div>
         <div class="text-end ms-auto">
           <p class="small text-secondary mb-1">Credits</p>
-          <p class="fs-4 fw-semibold mb-2" id="profile-credits">0 ✧</p>
-          <button id="logout-btn" class="btn btn-outline-light btn-sm">
+          <span id="profile-credits" class="badge rounded-pill nook-credits-pill d-inline-block mb-2">
+            0 ✧
+          </span>
+          <br />
+          <button class="btn btn-outline-light btn-sm" data-logout-btn="true">
             Log out
           </button>
+
         </div>
       </header>
 
       <div class="row g-4">
+
         <!-- MY LISTINGS PREVIEW -->
         <div class="col-lg-6">
           <section class="nook-card-glow p-4 h-100">
@@ -122,6 +127,53 @@
             </p>
           </section>
         </div>
+
+        <!-- PROFILE EDIT -->
+        <section class="nook-card-glow p-4 mb-4" id="profile-edit-section">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h5 mb-0">Edit profile</h2>
+            <small class="text-secondary">
+              Update your avatar and short bio.
+            </small>
+          </div>
+
+          <form id="profile-edit-form" novalidate>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="profile-avatar-url" class="form-label small text-uppercase">
+                  Avatar URL
+                </label>
+                <input type="url" class="form-control" id="profile-avatar-url"
+                  placeholder="https://example.com/avatar.jpg" />
+                <div class="form-text">
+                  Use a square image URL for best results.
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <label for="profile-bio" class="form-label small text-uppercase">
+                  Bio / tagline
+                </label>
+                <textarea id="profile-bio" class="form-control" rows="3"
+                  placeholder="Keeper of treasures, spender of credits..."></textarea>
+              </div>
+            </div>
+
+            <div class="mt-3 d-flex flex-wrap gap-2">
+              <button type="submit" class="btn btn-primary btn-sm">
+                Save changes
+              </button>
+              <button type="button" class="btn btn-outline-light btn-sm" id="profile-edit-reset">
+                Reset
+              </button>
+            </div>
+
+            <p class="small text-danger mt-2 d-none" id="profile-edit-error"></p>
+            <p class="small text-success mt-2 d-none" id="profile-edit-success">
+              Profile updated ✨
+            </p>
+          </form>
+        </section>
 
         <!-- MY BIDS -->
         <div class="col-lg-6">

@@ -1,192 +1,161 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>Create listing – The Nook Market</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta
-      name="description"
-      content="Create a new auction listing at The Nook Market."
-    />
 
-    <link rel="stylesheet" href="../css/main.css" />
+<head>
+  <meta charset="utf-8" />
+  <title>Create listing – The Nook Market</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Create a new auction listing at The Nook Market." />
 
-    <link
-      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cormorant+Garamond:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <!-- NAVBAR -->
-    <header
-      class="navbar navbar-expand-lg navbar-dark bg-dark bg-opacity-75 border-bottom border-secondary fixed-top"
-    >
-      <div class="container">
-        <a class="navbar-brand d-flex align-items-center gap-2" href="../index.html">
-          <img
-            src="https://i.postimg.cc/HWvz0myL/Logo-The-Nook-Market-redigert-redigert-redigert.webp"
-            alt="The Nook Market logo"
-            class="nook-logo-img"
-          />
-          <span class="nook-logo">The Nook Market</span>
-        </a>
+  <link rel="stylesheet" href="../css/main.css" />
 
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#mainNav"
-          aria-controls="mainNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cormorant+Garamond:wght@400;500;600&display=swap"
+    rel="stylesheet" />
+</head>
 
-        <nav class="collapse navbar-collapse" id="mainNav">
-          <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
-            <li class="nav-item">
-              <a class="nav-link" href="./listings.html">Browse</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="./my-listings.html">My Listings</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="./profile.html">Profile</a>
-            </li>
-            <li class="nav-item ms-lg-3">
-              <a href="./login.html" class="btn btn-outline-light btn-sm">Log in</a>
-            </li>
-            <li class="nav-item ms-2">
-              <a href="./register.html" class="btn btn-primary btn-sm">Sign up</a>
-            </li>
-          </ul>
-        </nav>
-      </div>
-    </header>
+<body>
+  <!-- NAVBAR -->
+  <header class="navbar navbar-expand-lg navbar-dark bg-dark bg-opacity-75 border-bottom border-secondary fixed-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="../index.html">
+        <img src="https://i.postimg.cc/HWvz0myL/Logo-The-Nook-Market-redigert-redigert-redigert.webp"
+          alt="The Nook Market logo" class="nook-logo-img" />
+        <span class="nook-logo">The Nook Market</span>
+      </a>
 
-    <main class="nook-page">
-      <section class="container" id="create-listing-section">
-        <div class="row justify-content-center">
-          <div class="col-lg-7 col-xl-6">
-            <div class="nook-card-glow p-4">
-              <header class="mb-4 text-center">
-                <p class="small text-secondary text-uppercase mb-1">
-                  Create listing
-                </p>
-                <h1 class="h3 mb-1">Summon a new treasure</h1>
-                <p class="small text-secondary mb-0">
-                  Title and end date are required. The rest just makes it prettier.
-                </p>
-              </header>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+        aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-              <form id="create-listing-form" novalidate>
-                <!-- Title -->
-                <div class="mb-3">
-                  <label for="create-title" class="form-label">Title*</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="create-title"
-                    required
-                    maxlength="80"
-                  />
-                  <div class="invalid-feedback">
-                    Please give your listing a title.
-                  </div>
+      <nav class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+          <li class="nav-item">
+            <a class="nav-link active" href="./listings.html">Browse</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="./my-listings.html">My Listings</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="./profile.html">Profile</a>
+          </li>
+
+          <!-- LOGIN / SIGNUP (shown when logged OUT) -->
+          <li class="nav-item ms-lg-3" id="nav-login-item">
+            <a href="./login.html" id="nav-login-link" class="btn btn-outline-light btn-sm">
+              Log in
+            </a>
+          </li>
+          <li class="nav-item ms-2" id="nav-register-item">
+            <a href="./register.html" id="nav-register-link" class="btn btn-primary btn-sm">
+              Sign up
+            </a>
+          </li>
+
+          <!-- CREDITS + LOGOUT (shown when logged IN) -->
+          <li class="nav-item ms-lg-3 d-none" id="nav-credits-item">
+            <span class="badge rounded-pill nook-credits-pill">
+              <span class="small me-1">Credits</span>
+              <span id="nav-credits-amount">0 ✧</span>
+            </span>
+          </li>
+          <li class="nav-item ms-2 d-none" id="nav-logout-item">
+            <button id="nav-logout-btn" class="btn btn-outline-light btn-sm" data-logout-btn="true">
+              Log out
+            </button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="nook-page">
+    <section class="container" id="create-listing-section">
+      <div class="row justify-content-center">
+        <div class="col-lg-7 col-xl-6">
+          <div class="nook-card-glow p-4">
+            <header class="mb-4 text-center">
+              <p class="small text-secondary text-uppercase mb-1">
+                Create listing
+              </p>
+              <h1 class="h3 mb-1">Summon a new treasure</h1>
+              <p class="small text-secondary mb-0">
+                Title and end date are required. The rest just makes it prettier.
+              </p>
+            </header>
+
+            <form id="create-listing-form" novalidate>
+              <!-- Title -->
+              <div class="mb-3">
+                <label for="create-title" class="form-label">Title*</label>
+                <input type="text" class="form-control" id="create-title" required maxlength="80" />
+                <div class="invalid-feedback">
+                  Please give your listing a title.
                 </div>
+              </div>
 
-                <!-- Description -->
-                <div class="mb-3">
-                  <label for="create-description" class="form-label">Description</label>
-                  <textarea
-                    class="form-control"
-                    id="create-description"
-                    rows="4"
-                    maxlength="600"
-                  ></textarea>
-                  <div class="form-text">
-                    Optional, but buyers love a good story.
-                  </div>
+              <!-- Description -->
+              <div class="mb-3">
+                <label for="create-description" class="form-label">Description</label>
+                <textarea class="form-control" id="create-description" rows="4" maxlength="600"></textarea>
+                <div class="form-text">
+                  Optional, but buyers love a good story.
                 </div>
+              </div>
 
-                <!-- Tags -->
-                <div class="mb-3">
-                  <label for="create-tags" class="form-label">Tags</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="create-tags"
-                    placeholder="books, cozy, dragon, zelda"
-                  />
-                  <div class="form-text">
-                    Separate tags with commas. Used for filtering.
-                  </div>
+              <!-- Tags -->
+              <div class="mb-3">
+                <label for="create-tags" class="form-label">Tags</label>
+                <input type="text" class="form-control" id="create-tags" placeholder="books, cozy, dragon, zelda" />
+                <div class="form-text">
+                  Separate tags with commas. Used for filtering.
                 </div>
+              </div>
 
-                <!-- Media URLs -->
-                <div class="mb-3">
-                  <label class="form-label">Images (URLs)</label>
+              <!-- Media URLs -->
+              <div class="mb-3">
+                <label class="form-label">Images (URLs)</label>
 
-                  <input
-                    type="url"
-                    class="form-control mb-2 create-media-url"
-                    placeholder="https://..."
-                  />
-                  <input
-                    type="url"
-                    class="form-control mb-2 create-media-url"
-                    placeholder="https://..."
-                  />
-                  <input
-                    type="url"
-                    class="form-control mb-2 create-media-url"
-                    placeholder="https://..."
-                  />
+                <input type="url" class="form-control mb-2 create-media-url" placeholder="https://..." />
+                <input type="url" class="form-control mb-2 create-media-url" placeholder="https://..." />
+                <input type="url" class="form-control mb-2 create-media-url" placeholder="https://..." />
 
-                  <div class="form-text">
-                    At least one image is recommended. URLs must be public and valid.
-                  </div>
+                <div class="form-text">
+                  At least one image is recommended. URLs must be public and valid.
                 </div>
+              </div>
 
-                <!-- Ends at -->
-                <div class="mb-4">
-                  <label for="create-ends-at" class="form-label">Ends at*</label>
-                  <input
-                    type="datetime-local"
-                    class="form-control"
-                    id="create-ends-at"
-                    required
-                  />
-                  <div class="form-text">
-                    Must be in the future. When time is up, the highest bid wins.
-                  </div>
-                  <div class="invalid-feedback">
-                    Please choose a valid end date in the future.
-                  </div>
+              <!-- Ends at -->
+              <div class="mb-4">
+                <label for="create-ends-at" class="form-label">Ends at*</label>
+                <input type="datetime-local" class="form-control" id="create-ends-at" required />
+                <div class="form-text">
+                  Must be in the future. When time is up, the highest bid wins.
                 </div>
+                <div class="invalid-feedback">
+                  Please choose a valid end date in the future.
+                </div>
+              </div>
 
-                <div
-                  class="alert alert-danger py-2 small d-none"
-                  id="create-error"
-                  role="alert"
-                ></div>
+              <div class="alert alert-danger py-2 small d-none" id="create-error" role="alert"></div>
 
-                <button type="submit" class="btn btn-primary w-100">
-                  Create listing
-                </button>
+              <button type="submit" class="btn btn-primary w-100">
+                Create listing
+              </button>
 
-                <p class="small text-secondary mt-3 mb-0">
-                  You must be logged in to create listings.
-                </p>
-              </form>
-            </div>
+              <p class="small text-secondary mt-3 mb-0">
+                You must be logged in to create listings.
+              </p>
+            </form>
           </div>
         </div>
-      </section>
-    </main>
+      </div>
+    </section>
+  </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../js/main.js"></script>
-  </body>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/main.js"></script>
+</body>
+
 </html>

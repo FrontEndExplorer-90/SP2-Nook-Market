@@ -1,10 +1,11 @@
 // Nook Market – main.js
-// Auth (register/login/logout) + listings + profile wiring for Noroff API v2
 
 const API_BASE = "https://v2.api.noroff.dev";
+
 const AUTH_REGISTER = `${API_BASE}/auth/register`;
 const AUTH_LOGIN = `${API_BASE}/auth/login`;
-const AUTH_CREATE_API_KEY = `${API_BASE}/auth/create-api-key`; // for later
+const AUTH_CREATE_API_KEY = `${API_BASE}/auth/create-api-key`;
+const PROFILES_BASE = `${API_BASE}/auction/profiles`;
 
 const STORAGE_KEY_AUTH = "nookMarketAuth";
 
@@ -44,9 +45,69 @@ function getAccessToken() {
   return null;
 }
 
+function getApiKey() {
+  const auth = getAuth();
+  if (auth && auth.data && auth.data.apiKey) {
+    return auth.data.apiKey;
+  }
+  return null;
+}
+
+// create / ensure API key after login
+async function ensureApiKey(authData) {
+  // authData is the object from /auth/login
+  if (!authData || !authData.data || !authData.data.accessToken) {
+    return authData;
+  }
+
+  // already has an API key? just return it
+  if (authData.data.apiKey) {
+    return authData;
+  }
+
+  try {
+    const response = await fetch(AUTH_CREATE_API_KEY, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authData.data.accessToken}`,
+      },
+      body: JSON.stringify({ name: "NookMarketKey" }),
+    });
+
+    const json = await response.json();
+
+    if (response.ok && json.data && json.data.key) {
+      authData.data.apiKey = json.data.key;
+      saveAuth(authData);
+    } else {
+      console.error("Could not create API key", json);
+    }
+  } catch (error) {
+    console.error("Error creating API key", error);
+  }
+
+  return authData;
+}
+
+// Make sure a logged-in user always has an API key in localStorage
+async function ensureApiKeyOnLoad() {
+  const auth = getAuth();
+  if (!auth || !auth.data) return;
+
+  const hasToken = !!auth.data.accessToken;
+  const hasKey = !!auth.data.apiKey;
+
+  if (hasToken && !hasKey) {
+    await ensureApiKey(auth);
+  }
+}
+
+
 function getAuthHeaders(includeJson = false) {
-  const token = getAccessToken();
   const headers = {};
+  const token = getAccessToken();
+  const apiKey = getApiKey();
 
   if (includeJson) {
     headers["Content-Type"] = "application/json";
@@ -54,13 +115,20 @@ function getAuthHeaders(includeJson = false) {
   if (token) {
     headers.Authorization = `Bearer ${token}`;
   }
+  if (apiKey) {
+    headers["X-Noroff-API-Key"] = apiKey;
+  }
 
   return headers;
 }
 
+
 // ---------- DOM bootstrapping ----------
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  // Make sure any existing login gets an API key before we hit profile endpoints
+  await ensureApiKeyOnLoad();
+
   const registerForm = document.querySelector("#register-form");
   const loginForm = document.querySelector("#login-form");
 
@@ -78,6 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
     .forEach((btn) => btn.addEventListener("click", handleLogout));
 
   hydrateProfileFromAuth();
+  hydrateNavbarAuth();
   updateNavbarAuthState();
 
   loadAllListings();
@@ -85,7 +154,9 @@ document.addEventListener("DOMContentLoaded", () => {
   setupCreateListingForm();
   loadMyListings();
   loadProfilePage();
+  setupProfileEditForm();
 });
+
 
 
 // ---------- Register ----------
@@ -255,8 +326,36 @@ function setupLoginForm(form) {
           "Login failed.";
         showFormError(form, msg);
       } else {
-        // v2 returns { data: { name, email, avatar, banner, accessToken, ... }, meta: {} }
-        saveAuth(data);
+        // Login OK – also create an API key if needed
+        const userData = data;
+
+        try {
+          const token = userData?.data?.accessToken;
+
+          if (token && !userData.data.apiKey) {
+            const keyResponse = await fetch(AUTH_CREATE_API_KEY, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({ name: "NookMarketKey" }),
+            });
+
+            const keyJson = await keyResponse.json();
+
+            if (keyResponse.ok && keyJson?.data?.key) {
+              userData.data.apiKey = keyJson.data.key;
+            } else {
+              console.warn("Could not create API key", keyJson);
+            }
+          }
+        } catch (err) {
+          console.warn("API key creation failed:", err);
+        }
+
+        // store token + apiKey
+        saveAuth(userData);
         window.location.href = "./profile.html";
       }
     } catch (error) {
@@ -270,6 +369,7 @@ function setupLoginForm(form) {
     }
   });
 }
+
 
 // ---------- Loading Profile ----------
 
@@ -483,6 +583,172 @@ async function loadProfileBids(username) {
   }
 }
 
+// ---------- Profile edit ----------
+
+function setupProfileEditForm() {
+  const form = document.querySelector("#profile-edit-form");
+  if (!form) return; // not on profile.html
+
+  const avatarInput = document.querySelector("#profile-avatar-url");
+  const bioInput = document.querySelector("#profile-bio");
+  const errorEl = document.querySelector("#profile-edit-error");
+  const successEl = document.querySelector("#profile-edit-success");
+  const resetBtn = document.querySelector("#profile-edit-reset");
+
+  const user = getAuthUser();
+  const token = getAccessToken();
+
+  // If not logged in – disable the form
+  if (!user || !token) {
+    form.classList.add("opacity-50");
+    const submitBtn = form.querySelector("button[type='submit']");
+    if (submitBtn) submitBtn.disabled = true;
+    if (errorEl) {
+      errorEl.textContent = "You need to be logged in to edit your profile.";
+      errorEl.classList.remove("d-none");
+    }
+    return;
+  }
+
+  // Prefill current values
+  if (avatarInput) avatarInput.value = user.avatar?.url || "";
+  if (bioInput) bioInput.value = user.bio || "";
+
+  function clearMessages() {
+    if (errorEl) {
+      errorEl.textContent = "";
+      errorEl.classList.add("d-none");
+    }
+    if (successEl) {
+      successEl.classList.add("d-none");
+    }
+  }
+
+  if (resetBtn) {
+    resetBtn.addEventListener("click", () => {
+      clearMessages();
+      if (avatarInput) avatarInput.value = user.avatar?.url || "";
+      if (bioInput) bioInput.value = user.bio || "";
+    });
+  }
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearMessages();
+
+    const avatarUrl = avatarInput ? avatarInput.value.trim() : "";
+    const bio = bioInput ? bioInput.value.trim() : "";
+
+    // Build payload – only include fields we actually want to change
+    const payload = {};
+
+    if (avatarUrl) {
+      payload.avatar = {
+        url: avatarUrl,
+        alt: `Avatar of ${user.name}`,
+      };
+    } else {
+      // Explicitly clear avatar if field is empty
+      payload.avatar = null;
+    }
+
+    if (bio) {
+      payload.bio = bio;
+    } else {
+      payload.bio = null;
+    }
+
+    const submitBtn = form.querySelector("button[type='submit']");
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Saving…";
+    }
+
+    try {
+      const response = await fetch(
+        `${API_BASE}/auction/profiles/${encodeURIComponent(user.name)}`,
+        {
+          method: "PUT",
+          headers: getAuthHeaders(true),  
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const json = await response.json();
+
+      if (!response.ok) {
+        console.error("Profile update failed", json);
+        if (errorEl) {
+          const msg =
+            (json.errors && json.errors.map((e) => e.message).join(" ")) ||
+            json.message ||
+            "Could not update profile.";
+          errorEl.textContent = msg;
+          errorEl.classList.remove("d-none");
+        }
+        return;
+      }
+
+      const updatedUser = json.data;
+
+      // Update localStorage auth object
+      const auth = getAuth();
+      if (auth && auth.data) {
+        auth.data = updatedUser;
+        saveAuth(auth);
+      }
+
+      // Refresh visible profile info + navbar credits/avatar
+      hydrateProfileFromAuth();
+
+      if (successEl) {
+        successEl.classList.remove("d-none");
+      }
+    } catch (error) {
+      console.error("Error updating profile", error);
+      if (errorEl) {
+        errorEl.textContent =
+          "Something went wrong while saving your changes. Try again.";
+        errorEl.classList.remove("d-none");
+      }
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Save changes";
+      }
+    }
+  });
+}
+
+function hydrateNavbarAuth() {
+  const user = getAuthUser();
+
+  const loginItem = document.querySelector("#nav-login-item");
+  const registerItem = document.querySelector("#nav-register-item");
+  const creditsItem = document.querySelector("#nav-credits-item");
+  const logoutItem = document.querySelector("#nav-logout-item");
+  const creditsAmount = document.querySelector("#nav-credits-amount");
+
+  // If this page doesn’t have the new navbar, bail
+  if (!loginItem && !creditsItem) return;
+
+  const isLoggedIn = !!user;
+
+  // Show/hide login + signup
+  if (loginItem) loginItem.classList.toggle("d-none", isLoggedIn);
+  if (registerItem) registerItem.classList.toggle("d-none", isLoggedIn);
+
+  // Show/hide credits + logout
+  if (creditsItem) creditsItem.classList.toggle("d-none", !isLoggedIn);
+  if (logoutItem) logoutItem.classList.toggle("d-none", !isLoggedIn);
+
+  // Update credits number in the pill
+  if (isLoggedIn && typeof user.credits === "number" && creditsAmount) {
+    creditsAmount.textContent = `${user.credits} ✧`;
+  }
+}
+
+
 function createProfileBidItem(bid) {
   const listing = bid.listing || {};
   const { url, alt } = getPrimaryImage(listing);
@@ -528,15 +794,15 @@ function hydrateProfileFromAuth() {
   const emailEl = document.querySelector("#profile-email");
   const creditsEl = document.querySelector("#profile-credits");
   const avatarEl = document.querySelector("#profile-avatar");
+  const navCreditsEl = document.querySelector("#nav-credits-amount");
 
-  if (usernameEl && user.name) {
-    usernameEl.textContent = user.name;
-  }
-  if (emailEl && user.email) {
-    emailEl.textContent = user.email;
-  }
+  if (usernameEl && user.name) usernameEl.textContent = user.name;
+  if (emailEl && user.email) emailEl.textContent = user.email;
   if (creditsEl && typeof user.credits === "number") {
     creditsEl.textContent = `${user.credits} ✧`;
+  }
+  if (navCreditsEl && typeof user.credits === "number") {
+    navCreditsEl.textContent = `${user.credits} ✧`;
   }
 
   if (avatarEl) {
@@ -546,7 +812,6 @@ function hydrateProfileFromAuth() {
       avatarEl.style.backgroundPosition = "center";
       avatarEl.textContent = "";
     } else {
-      // Fallback: show initials if no avatar image
       avatarEl.style.backgroundImage = "";
       avatarEl.textContent = (user.name || "NM").slice(0, 2).toUpperCase();
     }
@@ -623,7 +888,7 @@ function updateNavbarAuthState() {
     navLogoutBtn.addEventListener("click", handleLogout);
   }
 }
- 
+
 // ---------- LISTINGS: helpers ----------
 
 const AUCTION_LISTINGS_URL = `${API_BASE}/auction/listings`;
@@ -811,6 +1076,9 @@ async function loadSingleListingPage() {
   const bidsListEl = document.querySelector("#listing-bids");
   const errorBidEl = document.querySelector("#bid-error");
 
+  // 🔹 NEW: grab the edit button
+  const editBtn = document.querySelector("#listing-edit-btn");
+
   if (titleEl) titleEl.textContent = "Loading listing…";
   if (errorBidEl) errorBidEl.textContent = "";
 
@@ -829,6 +1097,21 @@ async function loadSingleListingPage() {
 
     const listing = json.data;
 
+    // 🔹 NEW: show Edit button only for the seller
+    const currentUser = getAuthUser();
+    if (
+      editBtn &&
+      currentUser &&
+      listing.seller &&
+      listing.seller.name === currentUser.name
+    ) {
+      editBtn.classList.remove("d-none");
+      editBtn.href = `./edit.html?id=${listing.id}`;
+    } else if (editBtn) {
+      // just in case
+      editBtn.classList.add("d-none");
+    }
+
     // Title / description / seller
     if (titleEl) titleEl.textContent = listing.title || "Untitled listing";
     if (descEl)
@@ -845,7 +1128,8 @@ async function loadSingleListingPage() {
       if (Array.isArray(listing.tags) && listing.tags.length > 0) {
         listing.tags.forEach((tag) => {
           const span = document.createElement("span");
-          span.className = "badge rounded-pill bg-secondary-subtle text-light";
+          span.className =
+            "nook-tag-pill";
           span.textContent = tag;
           tagsEl.appendChild(span);
         });
@@ -935,6 +1219,7 @@ async function loadSingleListingPage() {
   }
 }
 
+
 function setupBidForm(listingId, currentHighestBid) {
   const form = document.querySelector("#bid-form");
   const amountInput = document.querySelector("#bid-amount");
@@ -1021,12 +1306,14 @@ function setupCreateListingForm() {
   const endsAtInput = document.querySelector("#create-ends-at");
   const errorEl = document.querySelector("#create-error");
 
-  // Make sure user is logged in
+  // Make sure user is logged in *and* has an API key
   const token = getAccessToken();
-  if (!token) {
+  const apiKey = getApiKey();
+
+  if (!token || !apiKey) {
     if (errorEl) {
       errorEl.textContent =
-        "You need to be logged in to create a listing. Please log in first.";
+        "You need to be logged in with a valid API key to create a listing. Try logging out and in again.";
       errorEl.classList.remove("d-none");
     }
     form.classList.add("opacity-50");
@@ -1038,10 +1325,9 @@ function setupCreateListingForm() {
   // Set minimum end date = now
   if (endsAtInput) {
     const now = new Date();
-    // For datetime-local input we use local time slice(0,16) -> YYYY-MM-DDTHH:MM
     const localISO = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
       .toISOString()
-      .slice(0, 16);
+      .slice(0, 16); // YYYY-MM-DDTHH:mm
     endsAtInput.min = localISO;
   }
 
@@ -1092,13 +1378,16 @@ function setupCreateListingForm() {
       endsAt: endsAt.toISOString(),
     };
 
+    const submitBtn = form.querySelector("button[type='submit']");
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Creating…";
+    }
+
     try {
       const response = await fetch(AUCTION_LISTINGS_URL, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers: getAuthHeaders(true), // <-- sends token + X-Noroff-API-Key + JSON
         body: JSON.stringify(payload),
       });
 
@@ -1109,6 +1398,7 @@ function setupCreateListingForm() {
         if (errorEl) {
           const msg =
             (json.errors && json.errors.map((e) => e.message).join(" ")) ||
+            json.message ||
             "Could not create listing.";
           errorEl.textContent = msg;
           errorEl.classList.remove("d-none");
@@ -1116,7 +1406,6 @@ function setupCreateListingForm() {
         return;
       }
 
-      // Success – go to the new listing
       const newId = json.data.id;
       window.location.href = `./listing.html?id=${newId}`;
     } catch (error) {
@@ -1125,6 +1414,11 @@ function setupCreateListingForm() {
         errorEl.textContent =
           "Something went wrong while creating your listing. Try again.";
         errorEl.classList.remove("d-none");
+      }
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Create listing";
       }
     }
   });
@@ -1249,8 +1543,9 @@ function createMyListingCard(listing) {
               <a href="./listing.html?id=${listing.id}" class="btn btn-outline-light btn-sm">
                 View
               </a>
-              <!-- Edit page can be added later -->
-              <!-- <a href="./edit.html?id=${listing.id}" class="btn btn-outline-light btn-sm">Edit</a> -->
+              <a href="./edit.html?id=${listing.id}" class="btn btn-outline-light btn-sm">
+                Edit
+              </a>
             </div>
           </div>
         </div>

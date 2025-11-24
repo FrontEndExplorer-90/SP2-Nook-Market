@@ -1,170 +1,155 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>Listing – The Nook Market</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta
-      name="description"
-      content="View full details, bids and gallery for a single listing at The Nook Market."
-    />
 
-    <link rel="stylesheet" href="../css/main.css" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cormorant+Garamond:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <!-- NAVBAR -->
-    <header
-      class="navbar navbar-expand-lg navbar-dark bg-dark bg-opacity-75 border-bottom border-secondary fixed-top"
-    >
-      <div class="container">
-        <a class="navbar-brand d-flex align-items-center gap-2" href="../index.html">
-          <img
-            src="https://i.postimg.cc/HWvz0myL/Logo-The-Nook-Market-redigert-redigert-redigert.webp"
-            alt="The Nook Market logo"
-            class="nook-logo-img"
-          />
-          <span class="nook-logo">The Nook Market</span>
-        </a>
+<head>
+  <meta charset="utf-8" />
+  <title>Listing – The Nook Market</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="View full details, bids and gallery for a single listing at The Nook Market." />
 
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#mainNav"
-          aria-controls="mainNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
+  <link rel="stylesheet" href="../css/main.css" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cormorant+Garamond:wght@400;500;600&display=swap"
+    rel="stylesheet" />
+</head>
 
-        <nav class="collapse navbar-collapse" id="mainNav">
-          <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
-            <li class="nav-item">
-              <a class="nav-link" href="./listings.html">Browse</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="./my-listings.html">My Listings</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="./profile.html">Profile</a>
-            </li>
-            <li class="nav-item ms-lg-3">
-              <a href="./login.html" class="btn btn-outline-light btn-sm">Log in</a>
-            </li>
-            <li class="nav-item ms-2">
-              <a href="./register.html" class="btn btn-primary btn-sm">Sign up</a>
-            </li>
-          </ul>
-        </nav>
-      </div>
-    </header>
+<body>
+  <!-- NAVBAR -->
+  <header class="navbar navbar-expand-lg navbar-dark bg-dark bg-opacity-75 border-bottom border-secondary fixed-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="../index.html">
+        <img src="https://i.postimg.cc/HWvz0myL/Logo-The-Nook-Market-redigert-redigert-redigert.webp"
+          alt="The Nook Market logo" class="nook-logo-img" />
+        <span class="nook-logo">The Nook Market</span>
+      </a>
 
-    <main class="nook-page">
-      <section class="container" id="listing-detail">
-        <div class="row g-4">
-          <!-- IMAGE + GALLERY -->
-          <div class="col-lg-6">
-            <div class="nook-card-glow p-3 h-100">
-              <img
-                id="listing-image-main"
-                src="https://via.placeholder.com/900x600?text=Loading+listing..."
-                alt="Listing image"
-                class="img-fluid rounded-3 w-100 mb-3"
-              />
-              <div
-                class="d-flex flex-wrap gap-2"
-                id="listing-thumbnails"
-                aria-label="Listing image gallery"
-              >
-                <!-- thumbs injected by JS -->
-              </div>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+        aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <nav class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+          <li class="nav-item">
+            <a class="nav-link active" href="./listings.html">Browse</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="./my-listings.html">My Listings</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="./profile.html">Profile</a>
+          </li>
+
+          <!-- LOGIN / SIGNUP (shown when logged OUT) -->
+          <li class="nav-item ms-lg-3" id="nav-login-item">
+            <a href="./login.html" id="nav-login-link" class="btn btn-outline-light btn-sm">
+              Log in
+            </a>
+          </li>
+          <li class="nav-item ms-2" id="nav-register-item">
+            <a href="./register.html" id="nav-register-link" class="btn btn-primary btn-sm">
+              Sign up
+            </a>
+          </li>
+
+          <!-- CREDITS + LOGOUT (shown when logged IN) -->
+          <li class="nav-item ms-lg-3 d-none" id="nav-credits-item">
+            <span class="badge rounded-pill nook-credits-pill">
+              <span class="small me-1">Credits</span>
+              <span id="nav-credits-amount">0 ✧</span>
+            </span>
+          </li>
+          <li class="nav-item ms-2 d-none" id="nav-logout-item">
+            <button id="nav-logout-btn" class="btn btn-outline-light btn-sm" data-logout-btn="true">
+              Log out
+            </button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="nook-page">
+    <section class="container" id="listing-detail">
+      <div class="row g-4">
+        <!-- IMAGE + GALLERY -->
+        <div class="col-lg-6">
+          <div class="nook-card-glow p-3 h-100">
+            <img id="listing-image-main" src="https://via.placeholder.com/900x600?text=Loading+listing..."
+              alt="Listing image" class="img-fluid rounded-3 w-100 mb-3" />
+            <div class="d-flex flex-wrap gap-2" id="listing-thumbnails" aria-label="Listing image gallery">
+              <!-- thumbs injected by JS -->
             </div>
           </div>
+        </div>
 
-          <!-- DETAILS + BID -->
-          <div class="col-lg-6">
-            <div class="nook-card-glow p-4 h-100">
-              <p
-                class="small text-secondary text-uppercase mb-1"
-                id="listing-category"
-              >
-                Listing
-              </p>
-              <h1 class="h3 mb-2" id="listing-title">Loading listing…</h1>
-              <p class="small text-secondary mb-3" id="listing-seller">Seller: —</p>
+        <!-- DETAILS + BID -->
+        <div class="col-lg-6">
+          <div class="nook-card-glow p-4 h-100">
+            <p class="small text-secondary text-uppercase mb-1" id="listing-category">
+              Listing
+            </p>
+            <h1 class="h3 mb-2" id="listing-title">Loading listing…</h1>
+            <p class="small text-secondary mb-3" id="listing-seller">Seller: —</p>
 
-              <p class="mb-3" id="listing-description">
-                Fetching description from the Noroff Auction API…
-              </p>
+            <p class="mb-3" id="listing-description">
+              Fetching description from the Noroff Auction API…
+            </p>
 
-              <div
-                class="d-flex flex-wrap gap-2 mb-3"
-                id="listing-tags"
-                aria-label="Listing tags"
-              >
-                <!-- tags go here -->
-              </div>
+            <div class="d-flex flex-wrap gap-2 mb-3" id="listing-tags" aria-label="Listing tags">
+              <!-- tags go here -->
+            </div>
 
-              <div class="border-top border-secondary-subtle pt-3 mt-3">
-                <div
-                  class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2"
-                >
-                  <div>
-                    <div class="small text-secondary">Current highest bid</div>
-                    <div class="fw-semibold fs-4" id="listing-highest-bid">
-                      0 ✧
-                    </div>
-                  </div>
-                  <div class="text-end">
-                    <div class="small text-secondary">Ends at</div>
-                    <div class="fw-semibold" id="listing-time-remaining">—</div>
+            <div class="border-top border-secondary-subtle pt-3 mt-3">
+              <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                <div>
+                  <div class="small text-secondary">Current highest bid</div>
+                  <div class="fw-semibold fs-4" id="listing-highest-bid">
+                    0 ✧
                   </div>
                 </div>
 
-                <form id="bid-form" class="mt-3" novalidate>
-                  <label for="bid-amount" class="form-label small">Place a bid</label>
-                  <div class="input-group">
-                    <input
-                      type="number"
-                      step="1"
-                      min="1"
-                      class="form-control"
-                      id="bid-amount"
-                      required
-                    />
-                    <button class="btn btn-primary" type="submit">Bid</button>
-                  </div>
-                  <div
-                    class="invalid-feedback d-block small"
-                    id="bid-error"
-                    aria-live="polite"
-                  ></div>
-                </form>
+                <div class="text-end me-3">
+                  <div class="small text-secondary">Ends at</div>
+                  <div class="fw-semibold" id="listing-time-remaining">—</div>
+                </div>
+
+                <!-- 🔹 EDIT BUTTON (hidden by default, shown only for seller) -->
+                <div class="ms-auto">
+                  <a id="listing-edit-btn" href="#" class="btn btn-outline-light btn-sm d-none">
+                    Edit listing
+                  </a>
+                </div>
               </div>
+
+              <form id="bid-form" class="mt-3" novalidate>
+                <label for="bid-amount" class="form-label small">Place a bid</label>
+                <div class="input-group">
+                  <input type="number" step="1" min="1" class="form-control" id="bid-amount" required />
+                  <button class="btn btn-primary" type="submit">Bid</button>
+                </div>
+                <div class="invalid-feedback d-block small" id="bid-error" aria-live="polite"></div>
+              </form>
+            </div>
+
+
+            <!-- BID HISTORY -->
+            <div class="col-12">
+              <section class="nook-card-glow p-4">
+                <h2 class="h5 mb-3">Bid history</h2>
+                <ul class="list-unstyled mb-0" id="listing-bids">
+                  <li class="small text-secondary">
+                    No bids yet. Be the first to offer your credits.
+                  </li>
+                </ul>
+              </section>
             </div>
           </div>
+    </section>
+  </main>
 
-          <!-- BID HISTORY -->
-          <div class="col-12">
-            <section class="nook-card-glow p-4">
-              <h2 class="h5 mb-3">Bid history</h2>
-              <ul class="list-unstyled mb-0" id="listing-bids">
-                <li class="small text-secondary">
-                  No bids yet. Be the first to offer your credits.
-                </li>
-              </ul>
-            </section>
-          </div>
-        </div>
-      </section>
-    </main>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/main.js"></script>
+</body>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../js/main.js"></script>
-  </body>
 </html>

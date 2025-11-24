@@ -17,52 +17,75 @@
   </head>
   <body>
     <!-- NAVBAR -->
-    <header
-      class="navbar navbar-expand-lg navbar-dark bg-dark bg-opacity-75 border-bottom border-secondary fixed-top"
+
+<header class="navbar navbar-expand-lg navbar-dark bg-dark bg-opacity-75 border-bottom border-secondary fixed-top">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="../index.html">
+      <img
+        src="https://i.postimg.cc/HWvz0myL/Logo-The-Nook-Market-redigert-redigert-redigert.webp"
+        alt="The Nook Market logo"
+        class="nook-logo-img"
+      />
+      <span class="nook-logo">The Nook Market</span>
+    </a>
+
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#mainNav"
+      aria-controls="mainNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
     >
-      <div class="container">
-        <a class="navbar-brand d-flex align-items-center gap-2" href="../index.html">
-          <img
-            src="https://i.postimg.cc/HWvz0myL/Logo-The-Nook-Market-redigert-redigert-redigert.webp"
-            alt="The Nook Market logo"
-            class="nook-logo-img"
-          />
-          <span class="nook-logo">The Nook Market</span>
-        </a>
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#mainNav"
-          aria-controls="mainNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
+    <nav class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+        <li class="nav-item">
+          <a class="nav-link active" href="./listings.html">Browse</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="./my-listings.html">My Listings</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="./profile.html">Profile</a>
+        </li>
 
-        <nav class="collapse navbar-collapse" id="mainNav">
-          <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
-            <li class="nav-item">
-              <a class="nav-link active" href="./listings.html">Browse</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="./my-listings.html">My Listings</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="./profile.html">Profile</a>
-            </li>
-            <li class="nav-item ms-lg-3">
-              <a href="./login.html" class="btn btn-outline-light btn-sm">Log in</a>
-            </li>
-            <li class="nav-item ms-2">
-              <a href="./register.html" class="btn btn-primary btn-sm">Sign up</a>
-            </li>
-          </ul>
-        </nav>
-      </div>
-    </header>
+        <!-- LOGIN / SIGNUP (shown when logged OUT) -->
+        <li class="nav-item ms-lg-3" id="nav-login-item">
+          <a href="./login.html" id="nav-login-link" class="btn btn-outline-light btn-sm">
+            Log in
+          </a>
+        </li>
+        <li class="nav-item ms-2" id="nav-register-item">
+          <a href="./register.html" id="nav-register-link" class="btn btn-primary btn-sm">
+            Sign up
+          </a>
+        </li>
+
+        <!-- CREDITS + LOGOUT (shown when logged IN) -->
+        <li class="nav-item ms-lg-3 d-none" id="nav-credits-item">
+          <span class="badge rounded-pill nook-credits-pill">
+            <span class="small me-1">Credits</span>
+            <span id="nav-credits-amount">0 ✧</span>
+          </span>
+        </li>
+        <li class="nav-item ms-2 d-none" id="nav-logout-item">
+          <button
+            id="nav-logout-btn"
+            class="btn btn-outline-light btn-sm"
+            data-logout-btn="true"
+          >
+            Log out
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
 
     <main class="nook-page">
       <section class="container">

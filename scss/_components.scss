@@ -146,3 +146,34 @@
 .nook-page {
   padding-top: 7rem; // adjust if you want more/less spacing
 }
+
+.nook-mini-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.9rem;
+  border: 1px solid rgba(245, 238, 227, 0.18);
+  background: radial-gradient(circle at top left, rgba(168, 108, 230, 0.12), rgba(9, 7, 15, 0.95));
+  text-decoration: none;
+  transition: transform 140ms ease-out, box-shadow 140ms ease-out, border-color 140ms ease-out;
+
+  .mini-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: rgba(245, 238, 227, 0.65);
+  }
+
+  .mini-title {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #f5eee3;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: rgba(252, 208, 130, 0.8);
+    box-shadow: 0 0 18px rgba(252, 208, 130, 0.28);
+  }
+}

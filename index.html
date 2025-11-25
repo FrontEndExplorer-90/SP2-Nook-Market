@@ -68,6 +68,7 @@
     <section class="nook-hero">
       <div class="container">
         <div class="row align-items-center gy-4">
+          <!-- LEFT: HERO TEXT + CTA -->
           <div class="col-lg-7">
             <span class="nook-pill mb-3">
               <span class="nook-potion"></span>
@@ -78,8 +79,8 @@
               your favorite fantasy market.
             </h1>
             <p class="nook-hero-subtitle mb-4">
-              Bid on rare books, enchanted gear, and curious collectibles. Every listing has a story, every bid a little
-              bit of magic.
+              Bid on rare books, enchanted gear, and curious collectibles. Every listing has a story,
+              every bid a little bit of magic.
             </p>
             <div class="d-flex gap-3 flex-wrap">
               <a href="./pages/listings.html" class="btn btn-primary btn-lg">Browse listings</a>
@@ -87,55 +88,59 @@
             </div>
           </div>
 
+          <!-- RIGHT: HOW IT WORKS + BROWSE BY VIBE -->
           <div class="col-lg-5">
-            <div class="nook-card-glow p-4">
-              <h2 class="h5 mb-3">Featured categories</h2>
-              <div class="row g-3">
-                <div class="col-6">
-                  <div class="card nook-card-hover h-100 bg-transparent border border-secondary-subtle">
-                    <div class="card-body">
-                      <p class="text-uppercase small text-secondary mb-1">Books</p>
-                      <p class="fw-semibold mb-0">Grimoires & rare tomes</p>
-                      <p class="small text-secondary mb-0">Dusty pages, dangerous secrets.</p>
-                    </div>
+            <div class="nook-card-glow p-4 h-100 d-flex flex-column justify-content-between">
+
+              <!-- HOW IT WORKS -->
+              <header class="mb-4">
+                <p class="small text-uppercase text-secondary mb-1">New to the market?</p>
+                <h2 class="h5 mb-2">How The Nook Market works</h2>
+                <ol class="small text-secondary ps-3 mb-0">
+                  <li>Browse enchanted listings from fellow adventurers.</li>
+                  <li>Spend your ✧ credits to place the highest bid.</li>
+                  <li>When the timer ends, the highest bid wins the treasure.</li>
+                </ol>
+              </header>
+
+              <!-- BROWSE BY VIBE -->
+              <div>
+                <p class="small text-uppercase text-secondary mb-2">Browse by vibe</p>
+                <div class="row g-2">
+                  <div class="col-6">
+                    <a href="./pages/listings.html?tag=books" class="nook-mini-card">
+                      <span class="mini-label">Books</span>
+                      <span class="mini-title">Grimoires &amp; tomes</span>
+                    </a>
                   </div>
-                </div>
-                <div class="col-6">
-                  <div class="card nook-card-hover h-100 bg-transparent border border-secondary-subtle">
-                    <div class="card-body">
-                      <p class="text-uppercase small text-secondary mb-1">Gear</p>
-                      <p class="fw-semibold mb-0">Adventurer’s kit</p>
-                      <p class="small text-secondary mb-0">Blades, cloaks & curiosities.</p>
-                    </div>
+                  <div class="col-6">
+                    <a href="./pages/listings.html?tag=gear" class="nook-mini-card">
+                      <span class="mini-label">Gear</span>
+                      <span class="mini-title">Adventurer’s kit</span>
+                    </a>
                   </div>
-                </div>
-                <div class="col-6">
-                  <div class="card nook-card-hover h-100 bg-transparent border border-secondary-subtle">
-                    <div class="card-body">
-                      <p class="text-uppercase small text-secondary mb-1">Collectibles</p>
-                      <p class="fw-semibold mb-0">Oddities & relics</p>
-                      <p class="small text-secondary mb-0">One-of-a-kind little monsters.</p>
-                    </div>
+                  <div class="col-6">
+                    <a href="./pages/listings.html?tag=collectible" class="nook-mini-card">
+                      <span class="mini-label">Curios</span>
+                      <span class="mini-title">Oddities &amp; relics</span>
+                    </a>
                   </div>
-                </div>
-                <div class="col-6">
-                  <div class="card nook-card-hover h-100 bg-transparent border border-secondary-subtle">
-                    <div class="card-body">
-                      <p class="text-uppercase small text-secondary mb-1">Pixel Trinkets</p>
-                      <p class="fw-semibold mb-0">Retro & cozy</p>
-                      <p class="small text-secondary mb-0">For your inner gamer witch.</p>
-                    </div>
+                  <div class="col-6">
+                    <a href="./pages/listings.html?tag=cozy" class="nook-mini-card">
+                      <span class="mini-label">Cozy</span>
+                      <span class="mini-title">Retro &amp; warm</span>
+                    </a>
                   </div>
                 </div>
               </div>
-              <p class="small text-secondary mt-3 mb-0">
-                Soon this will all be dynamic from the Noroff Auction API. For now, we’re just warming up the cauldrons.
-              </p>
+
             </div>
           </div>
+
         </div>
       </div>
     </section>
+
 
     <!-- FEATURED LISTINGS WITH IMAGES -->
     <section class="py-5" id="featured-listings">

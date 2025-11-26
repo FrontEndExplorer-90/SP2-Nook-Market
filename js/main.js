@@ -157,6 +157,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   setupProfileEditForm();
   loadEditListingPage();
   setupEditListingForm();
+  loadMyBidsPage();
 
 });
 
@@ -585,6 +586,67 @@ async function loadProfileBids(username) {
       '<li class="small text-danger">Something went wrong while loading your bids.</li>';
   }
 }
+
+async function loadMyBidsPage() {
+  const listEl = document.querySelector("#my-bids-list");
+  const emptyMessage = document.querySelector("#my-bids-empty");
+  const notLoggedInAlert = document.querySelector("#my-bids-not-logged-in");
+
+  if (!listEl) return; // not on my-bids.html
+
+  const user = getAuthUser();
+
+  // Not logged in
+  if (!user || !user.name) {
+    listEl.innerHTML = "";
+    if (emptyMessage) emptyMessage.classList.add("d-none");
+    if (notLoggedInAlert) notLoggedInAlert.classList.remove("d-none");
+    return;
+  }
+
+  // Logged in – fetch bids
+  if (notLoggedInAlert) notLoggedInAlert.classList.add("d-none");
+  listEl.innerHTML =
+    '<li class="small text-secondary">Fetching your bids…</li>';
+  if (emptyMessage) emptyMessage.classList.add("d-none");
+
+  try {
+    const response = await fetch(
+      `${API_BASE}/auction/profiles/${encodeURIComponent(
+        user.name
+      )}/bids?_listings=true&sort=created&sortOrder=desc`,
+      {
+        headers: getAuthHeaders(),
+      }
+    );
+
+    const json = await response.json();
+
+    if (!response.ok) {
+      console.error("Failed to load my bids", json);
+      listEl.innerHTML =
+        '<li class="small text-danger">Couldn’t load your bids right now.</li>';
+      return;
+    }
+
+    const bids = Array.isArray(json.data) ? json.data : [];
+
+    if (!bids.length) {
+      listEl.innerHTML = "";
+      if (emptyMessage) emptyMessage.classList.remove("d-none");
+      return;
+    }
+
+    // Re-use existing renderer from profile page
+    const recent = bids.slice(0, 50); // or all, up to you
+    listEl.innerHTML = recent.map((bid) => createProfileBidItem(bid)).join("");
+  } catch (error) {
+    console.error("Error loading my bids", error);
+    listEl.innerHTML =
+      '<li class="small text-danger">Something went wrong while loading your bids.</li>';
+  }
+}
+
 
 // ---------- Profile edit ----------
 
@@ -1296,9 +1358,6 @@ async function loadAllListings() {
 
   if (!grid) return; // not on listings.html
 
-  // 🔹 read optional ?tag= from the URL (e.g. listings.html?tag=books)
-  const activeTag = getQueryParam("tag"); // this helper already exists in your file
-
   if (emptyMessage) {
     emptyMessage.classList.add("d-none");
   }
@@ -1312,10 +1371,17 @@ async function loadAllListings() {
   `;
 
   try {
-    const response = await fetch(
-      `${AUCTION_LISTINGS_URL}?_active=true&_seller=true&_bids=true&sort=endsAt&sortOrder=asc&limit=24&page=1`
-    );
+    const tagFilter = getQueryParam("tag"); // 👈 NEW
 
+    let url =
+      `${AUCTION_LISTINGS_URL}` +
+      `?_active=true&_seller=true&_bids=true&sort=endsAt&sortOrder=asc&limit=24&page=1`;
+
+    if (tagFilter) {
+      url += `&_tag=${encodeURIComponent(tagFilter)}`;
+    }
+
+    const response = await fetch(url);
     const json = await response.json();
 
     if (!response.ok) {
@@ -1330,18 +1396,7 @@ async function loadAllListings() {
       return;
     }
 
-    let listings = Array.isArray(json.data) ? json.data : [];
-
-    // 🔹 if we have a ?tag= in the URL, filter by that
-    if (activeTag) {
-      const tagLower = activeTag.toLowerCase();
-      listings = listings.filter((listing) =>
-        Array.isArray(listing.tags) &&
-        listing.tags.some(
-          (tag) => tag && tag.toLowerCase() === tagLower
-        )
-      );
-    }
+    const listings = Array.isArray(json.data) ? json.data : [];
 
     if (!listings.length) {
       grid.innerHTML = "";
@@ -1363,6 +1418,7 @@ async function loadAllListings() {
     `;
   }
 }
+
 
 function getQueryParam(name) {
   const params = new URLSearchParams(window.location.search);
@@ -1544,6 +1600,7 @@ function setupBidForm(listingId, currentHighestBid) {
 
   const token = getAccessToken();
 
+  // If not logged in, disable the form
   if (!token) {
     form.classList.add("opacity-50");
     const button = form.querySelector("button[type='submit']");
@@ -1569,14 +1626,14 @@ function setupBidForm(listingId, currentHighestBid) {
     }
 
     try {
+      // 🔹 use helper that includes BOTH token + API key (+ JSON header)
+      const headers = getAuthHeaders(true);
+
       const response = await fetch(
         `${AUCTION_LISTINGS_URL}/${listingId}/bids`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
+          headers,
           body: JSON.stringify({ amount }),
         }
       );
@@ -1588,13 +1645,14 @@ function setupBidForm(listingId, currentHighestBid) {
         if (errorEl) {
           const msg =
             (json.errors && json.errors.map((e) => e.message).join(" ")) ||
+            json.message ||
             "Could not place bid.";
           errorEl.textContent = msg;
         }
         return;
       }
 
-      // Refresh page to show new bid + updated highest bid
+      // Success – reload to show new bid + updated highest bid
       window.location.reload();
     } catch (error) {
       console.error("Error placing bid", error);
@@ -1605,6 +1663,7 @@ function setupBidForm(listingId, currentHighestBid) {
     }
   });
 }
+
 
 // ---------- Create Listings ----------
 

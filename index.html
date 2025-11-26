@@ -88,59 +88,75 @@
             </div>
           </div>
 
-          <!-- RIGHT: HOW IT WORKS + BROWSE BY VIBE -->
           <div class="col-lg-5">
-            <div class="nook-card-glow p-4 h-100 d-flex flex-column justify-content-between">
+            <div class="nook-card-glow p-4">
+              <h2 class="h5 mb-3">New to the market?</h2>
+              <p class="small text-secondary mb-3">
+                1. Browse enchanted listings from fellow adventurers.<br />
+                2. Spend your ✧ credits to place the highest bid.<br />
+                3. When the timer ends, the highest bid wins the treasure.
+              </p>
 
-              <!-- HOW IT WORKS -->
-              <header class="mb-4">
-                <p class="small text-uppercase text-secondary mb-1">New to the market?</p>
-                <h2 class="h5 mb-2">How The Nook Market works</h2>
-                <ol class="small text-secondary ps-3 mb-0">
-                  <li>Browse enchanted listings from fellow adventurers.</li>
-                  <li>Spend your ✧ credits to place the highest bid.</li>
-                  <li>When the timer ends, the highest bid wins the treasure.</li>
-                </ol>
-              </header>
+              <p class="small text-secondary text-uppercase mb-2">Browse by vibe</p>
 
-              <!-- BROWSE BY VIBE -->
-              <div>
-                <p class="small text-uppercase text-secondary mb-2">Browse by vibe</p>
-                <div class="row g-2">
-                  <div class="col-6">
-                    <a href="./pages/listings.html?tag=books" class="nook-mini-card">
-                      <span class="mini-label">Books</span>
-                      <span class="mini-title">Grimoires &amp; tomes</span>
-                    </a>
-                  </div>
-                  <div class="col-6">
-                    <a href="./pages/listings.html?tag=gear" class="nook-mini-card">
-                      <span class="mini-label">Gear</span>
-                      <span class="mini-title">Adventurer’s kit</span>
-                    </a>
-                  </div>
-                  <div class="col-6">
-                    <a href="./pages/listings.html?tag=collectible" class="nook-mini-card">
-                      <span class="mini-label">Curios</span>
-                      <span class="mini-title">Oddities &amp; relics</span>
-                    </a>
-                  </div>
-                  <div class="col-6">
-                    <a href="./pages/listings.html?tag=cozy" class="nook-mini-card">
-                      <span class="mini-label">Cozy</span>
-                      <span class="mini-title">Retro &amp; warm</span>
-                    </a>
-                  </div>
+              <div class="row g-3" id="hero-category-grid">
+                <!-- BOOKS -->
+                <div class="col-6">
+                  <a href="./pages/listings.html?tag=book"
+                    class="card nook-card-hover h-100 bg-transparent border border-secondary-subtle text-decoration-none"
+                    data-hero-tag="book">
+                    <div class="card-body">
+                      <p class="text-uppercase small text-secondary mb-1">Books</p>
+                      <p class="fw-semibold mb-0">Grimoires &amp; tomes</p>
+                      <p class="small text-secondary mb-0 js-hero-count">Summoning…</p>
+                    </div>
+                  </a>
+                </div>
+
+                <!-- GEAR -->
+                <div class="col-6">
+                  <a href="./pages/listings.html?tag=gear"
+                    class="card nook-card-hover h-100 bg-transparent border border-secondary-subtle text-decoration-none"
+                    data-hero-tag="gear">
+                    <div class="card-body">
+                      <p class="text-uppercase small text-secondary mb-1">Gear</p>
+                      <p class="fw-semibold mb-0">Adventurer’s kit</p>
+                      <p class="small text-secondary mb-0 js-hero-count">Summoning…</p>
+                    </div>
+                  </a>
+                </div>
+
+                <!-- CURIOS -->
+                <div class="col-6">
+                  <a href="./pages/listings.html?tag=collectible"
+                    class="card nook-card-hover h-100 bg-transparent border border-secondary-subtle text-decoration-none"
+                    data-hero-tag="collectible">
+                    <div class="card-body">
+                      <p class="text-uppercase small text-secondary mb-1">Curios</p>
+                      <p class="fw-semibold mb-0">Oddities &amp; relics</p>
+                      <p class="small text-secondary mb-0 js-hero-count">Summoning…</p>
+                    </div>
+                  </a>
+                </div>
+
+                <!-- COZY -->
+                <div class="col-6">
+                  <a href="./pages/listings.html?tag=mug"
+                    class="card nook-card-hover h-100 bg-transparent border border-secondary-subtle text-decoration-none"
+                    data-hero-tag="mug">
+                    <div class="card-body">
+                      <p class="text-uppercase small text-secondary mb-1">Cozy</p>
+                      <p class="fw-semibold mb-0">Retro &amp; warm</p>
+                      <p class="small text-secondary mb-0 js-hero-count">Summoning…</p>
+                    </div>
+                  </a>
                 </div>
               </div>
-
             </div>
           </div>
-
         </div>
       </div>
     </section>
-
 
     <!-- FEATURED LISTINGS WITH IMAGES -->
     <section class="py-5" id="featured-listings">
@@ -156,77 +172,100 @@
         </header>
 
         <div class="row g-4">
-          <!-- BOOK: Fourth Wing -->
+
+          <!-- WORLD OF WARCRAFT -->
           <div class="col-md-6 col-lg-3">
             <article class="card h-100 nook-card-hover bg-transparent border border-secondary-subtle">
-              <img src="https://i.postimg.cc/YScZShZY/Fourth-Wing-Sales-Image.webp"
-                class="card-img-top nook-listing-image" alt="Fourth Wing special edition book" loading="lazy" />
+              <img src="https://i.postimg.cc/Lsz7gmM4/World-Of-Warcraft-Game-Sales-Image.webp"
+                class="card-img-top nook-listing-image" alt="World of Warcraft Collector's Edition box"
+                loading="lazy" />
+              <div class="card-body d-flex flex-column">
+                <p class="small text-secondary text-uppercase mb-1">Game · Collectors edition</p>
+                <h3 class="h6 mb-2">World of Warcraft – Collector’s Edition PC Game</h3>
+                <p class="small text-secondary flex-grow-1">
+                  Azeroth is calling again – maps, lore, and nostalgia packed into one heavy box of feelings.
+                </p>
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                  <span class="fw-semibold">Start bid · 0 ✧</span>
+
+                  <!-- WoW listing -->
+                  <a href="./pages/listing.html?id=7776d3e5-5f9e-4d4c-a627-1ee182318217"
+                    class="btn btn-outline-light btn-sm">
+                    View details
+                  </a>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <!-- HARRY POTTER HARDBACK -->
+          <div class="col-md-6 col-lg-3">
+            <article class="card h-100 nook-card-hover bg-transparent border border-secondary-subtle">
+              <img src="https://i.postimg.cc/k5rz5Bzx/Harry-Potter-Sale-Image.webp"
+                class="card-img-top nook-listing-image" alt="Harry Potter hardback book set on a shelf"
+                loading="lazy" />
               <div class="card-body d-flex flex-column">
                 <p class="small text-secondary text-uppercase mb-1">Book · Fantasy</p>
-                <h3 class="h6 mb-2">Fourth Wing – special edition</h3>
+                <h3 class="h6 mb-2">Harry Potter – Hardback Edition</h3>
                 <p class="small text-secondary flex-grow-1">
-                  Edges sprayed like dragonfire, pages smelling faintly of smoke and ink.
+                  A magical hardback for cozy rereads, hot chocolate, and avoiding your real-life to-do list.
                 </p>
                 <div class="d-flex justify-content-between align-items-center mt-2">
-                  <span class="fw-semibold">32 ✧</span>
-                  <button class="btn btn-outline-light btn-sm">View details</button>
+                  <span class="fw-semibold">Start bid · 0 ✧</span>
+                  
+                  <!-- Harry Potter listing -->
+                  <a href="pages/listing.html?id=7dcdde5c-d3dc-41eb-a4ad-148fc323f06a"
+                    class="btn btn-outline-light btn-sm">
+                    View details
+                  </a>
                 </div>
               </div>
             </article>
           </div>
 
-          <!-- GAME: Hogwarts Legacy -->
+          <!-- HP GAMING HEADSET -->
           <div class="col-md-6 col-lg-3">
             <article class="card h-100 nook-card-hover bg-transparent border border-secondary-subtle">
-              <img src="https://i.postimg.cc/SK03KJ3f/Hogwarts-Legacy-Game-Sales-Image.webp"
-                class="card-img-top nook-listing-image" alt="Hogwarts Legacy game cover" loading="lazy" />
+              <img src="https://i.postimg.cc/JhwvhGvc/Headset-HP-Sales-Image.webp"
+                class="card-img-top nook-listing-image" alt="Black and gold HP RGB gaming headset" loading="lazy" />
               <div class="card-body d-flex flex-column">
-                <p class="small text-secondary text-uppercase mb-1">Game · Adventure</p>
-                <h3 class="h6 mb-2">Hogwarts Legacy (PS5)</h3>
+                <p class="small text-secondary text-uppercase mb-1">Gear · Headset</p>
+                <h3 class="h6 mb-2">HP Gaming Headset – RGB Comfort Edition</h3>
                 <p class="small text-secondary flex-grow-1">
-                  Step into the castle halls and absolutely ignore your real-life responsibilities.
+                  Comfy over-ear headset for raids, Discord chaos, and ignoring everyone in the room.
                 </p>
                 <div class="d-flex justify-content-between align-items-center mt-2">
-                  <span class="fw-semibold">58 ✧</span>
-                  <button class="btn btn-outline-light btn-sm">View details</button>
+                  <span class="fw-semibold">Start bid · 0 ✧</span>
+
+                  <!-- HP Headset listing -->
+                  <a href="pages/listing.html?id=a77530a4-5193-4dee-aecc-ab9a5e4415a7"
+                    class="btn btn-outline-light btn-sm">
+                    View details
+                  </a>
                 </div>
               </div>
             </article>
           </div>
 
-          <!-- GEAR: Zelda keyboard -->
+          <!-- STAR WARS COLLECTIBLE -->
           <div class="col-md-6 col-lg-3">
             <article class="card h-100 nook-card-hover bg-transparent border border-secondary-subtle">
-              <img src="https://i.postimg.cc/mrxJrtJV/keyboard-Zelda-Sales-Image.webp"
-                class="card-img-top nook-listing-image" alt="Zelda themed mechanical keyboard" loading="lazy" />
+              <img src="https://i.postimg.cc/43zMHXRD/Star-Wars-Sales-Image.webp"
+                class="card-img-top nook-listing-image" alt="Star Wars collectible starship model" loading="lazy" />
               <div class="card-body d-flex flex-column">
-                <p class="small text-secondary text-uppercase mb-1">Gear · Keyboard</p>
-                <h3 class="h6 mb-2">Hylian mechanical keyboard</h3>
+                <p class="small text-secondary text-uppercase mb-1">Collectible · Star Wars</p>
+                <h3 class="h6 mb-2">Star Wars Collectible / Edition</h3>
                 <p class="small text-secondary flex-grow-1">
-                  For typing quests, rage-quits, and love letters to your OTP.
+                  For the pilot who still quotes the original trilogy and makes pew-pew sounds at their desk.
                 </p>
                 <div class="d-flex justify-content-between align-items-center mt-2">
-                  <span class="fw-semibold">74 ✧</span>
-                  <button class="btn btn-outline-light btn-sm">View details</button>
-                </div>
-              </div>
-            </article>
-          </div>
+                  <span class="fw-semibold">Start bid · 0 ✧</span>
 
-          <!-- COLLECTIBLE: Velaris mug -->
-          <div class="col-md-6 col-lg-3">
-            <article class="card h-100 nook-card-hover bg-transparent border border-secondary-subtle">
-              <img src="https://i.postimg.cc/SKW5YmpS/Velaris-Mug-Sales-Image.webp"
-                class="card-img-top nook-listing-image" alt="Velaris themed mug collectible" loading="lazy" />
-              <div class="card-body d-flex flex-column">
-                <p class="small text-secondary text-uppercase mb-1">Collectible · Mug</p>
-                <h3 class="h6 mb-2">Velaris night-sky mug</h3>
-                <p class="small text-secondary flex-grow-1">
-                  Best served with hot chocolate and questionable life choices at 2 a.m.
-                </p>
-                <div class="d-flex justify-content-between align-items-center mt-2">
-                  <span class="fw-semibold">19 ✧</span>
-                  <button class="btn btn-outline-light btn-sm">View details</button>
+                  <!-- Star Wars collectible listing -->
+                  <a href="pages/listing.html?id=f72f0585-9b5a-426a-b205-d48fdc1699cd"
+                    class="btn btn-outline-light btn-sm">
+                    View details
+                  </a>
                 </div>
               </div>
             </article>

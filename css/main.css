@@ -12043,3 +12043,168 @@ body {
 }
 
 /*# sourceMappingURL=main.css.map */
+
+/* ===== MOBILE HEADER OFFSET ===== */
+
+body {
+  padding-top: 4.5rem;
+}
+
+@media (max-width: 991.98px) {
+  body {
+    padding-top: 9rem; 
+  }
+}
+
+.nook-404-page {
+  min-height: calc(100vh - 4rem); /* header padding already on body */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  background:
+    radial-gradient(circle at 15% 0%, rgba(170, 120, 255, 0.18), transparent 55%),
+    radial-gradient(circle at 85% 100%, rgba(255, 190, 120, 0.16), transparent 55%),
+    #05060b;
+  color: #ffffff;
+  text-align: center;
+}
+
+.nook-404-inner {
+  position: relative;
+  max-width: 520px;
+  width: 100%;
+  padding: 2.5rem 2rem 3rem;
+  border-radius: 16px;
+  background: rgba(7, 7, 15, 0.8);
+  box-shadow:
+    0 0 40px rgba(163, 127, 255, 0.25),
+    0 0 90px rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  overflow: hidden;
+}
+
+
+.nook-404-orb {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  width: 260px;
+  height: 260px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  opacity: 0.25;
+  filter: blur(2px);
+  animation: nook-orb-float 6s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 0;
+}
+
+
+
+.nook-404-title {
+  position: relative;
+  font-size: clamp(4.5rem, 10vw, 5.8rem);
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  margin-bottom: 0.5rem;
+  text-indent: 0.25em;
+  text-shadow:
+    0 0 12px rgba(255, 255, 255, 0.5),
+    0 0 28px rgba(168, 116, 255, 0.85);
+  color: #f9f4ff;
+  z-index: 1;
+  animation: nook-title-glow 5.5s ease-in-out infinite alternate;
+}
+
+.nook-404-subtitle {
+  position: relative;
+  font-size: 1.3rem;
+  margin-bottom: 1.4rem;
+  color: rgba(255, 255, 255, 0.9);
+  z-index: 1;
+}
+
+.nook-404-text {
+  position: relative;
+  margin-bottom: 2rem;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: rgba(235, 230, 255, 0.85);
+  z-index: 1;
+}
+
+
+.nook-404-hint {
+  margin-bottom: 2rem;
+}
+
+.nook-404-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  background: radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.12), transparent 70%),
+              rgba(35, 23, 66, 0.9);
+  border: 1px solid rgba(201, 168, 255, 0.5);
+  box-shadow: 0 0 16px rgba(173, 130, 255, 0.5);
+  font-size: 0.9rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: rgba(250, 244, 255, 0.9);
+}
+
+/* Buttons */
+
+.nook-404-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+
+.nook-404-buttons .btn {
+  min-width: 170px;
+  font-size: 0.98rem;
+  padding-inline: 1.25rem;
+}
+
+
+@keyframes nook-orb-float {
+  0% {
+    transform: translate(-50%, -10px);
+  }
+  100% {
+    transform: translate(-50%, 20px);
+  }
+}
+
+@keyframes nook-title-glow {
+  0% {
+    text-shadow:
+      0 0 10px rgba(255, 255, 255, 0.4),
+      0 0 22px rgba(168, 116, 255, 0.7);
+  }
+  100% {
+    text-shadow:
+      0 0 16px rgba(255, 255, 255, 0.55),
+      0 0 36px rgba(209, 171, 255, 0.95);
+  }
+}
+
+
+@media (max-width: 575.98px) {
+  .nook-404-inner {
+    padding: 2.2rem 1.4rem 2.6rem;
+  }
+
+  .nook-404-text {
+    font-size: 0.98rem;
+  }
+
+  .nook-404-buttons .btn {
+    width: 100%;
+  }
+}

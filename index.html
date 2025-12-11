@@ -18,32 +18,98 @@
 </head>
 
 <body>
-  <header class="navbar navbar-expand-lg navbar-dark bg-dark bg-opacity-75 border-bottom border-secondary fixed-top">
+  <!-- MOBILE HEADER (visible on < lg) -->
+  <header class="d-lg-none navbar navbar-dark bg-dark bg-opacity-75 border-bottom border-secondary fixed-top">
+    <div class="container py-2">
+
+      <!-- ROW 1: Logo -->
+      <div class="d-flex justify-content-center">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="./index.html">
+          <img src="https://i.postimg.cc/HWvz0myL/Logo-The-Nook-Market-redigert-redigert-redigert.webp"
+            alt="The Nook Market logo" class="nook-logo-img" />
+          <span class="nook-logo">THE NOOK MARKET</span>
+        </a>
+      </div>
+
+      <!-- ROW 2: Nav links -->
+      <nav class="mt-3">
+        <ul class="nav justify-content-center gap-4">
+          <li class="nav-item">
+            <a class="nav-link" href="./pages/my-listings.html">My Listings</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="./pages/listings.html">Browse</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="./pages/profile.html">Profile</a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- ROW 3: Auth buttons -->
+      <div class="mt-3 w-100 d-flex justify-content-center">
+        <div class="d-flex flex-wrap justify-content-center align-items-center gap-3 w-100 text-center">
+
+          <!-- Credits (logged IN) -->
+          <span id="nav-credits-item" class="badge rounded-pill nook-credits-pill d-none mx-auto">
+            <span class="small me-1">Credits</span>
+            <span id="nav-credits-amount">0 ✧</span>
+          </span>
+
+          <!-- Log out (logged IN) -->
+          <button id="nav-logout-item" class="btn btn-outline-light btn-sm d-none mx-auto" data-logout-btn="true">
+            Log out
+          </button>
+
+          <!-- Log in (logged OUT) -->
+          <a href="./pages/login.html" id="nav-login-item" class="btn btn-outline-light btn-sm mx-auto">
+            log in
+          </a>
+
+          <!-- Sign up (logged OUT) -->
+          <a href="./pages/register.html" id="nav-register-item" class="btn btn-primary btn-sm mx-auto">
+            Sign up
+          </a>
+
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+
+  <header
+    class="d-none d-lg-block navbar navbar-expand-lg navbar-dark bg-dark bg-opacity-75 border-bottom border-secondary fixed-top">
     <div class="container">
+
+      <!-- Brand -->
       <a class="navbar-brand d-flex align-items-center gap-2" href="./index.html">
         <img src="https://i.postimg.cc/HWvz0myL/Logo-The-Nook-Market-redigert-redigert-redigert.webp"
           alt="The Nook Market logo" class="nook-logo-img" />
         <span class="nook-logo">The Nook Market</span>
       </a>
 
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
-        aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+      <!-- Toggler -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
         <span class="navbar-toggler-icon"></span>
       </button>
 
+      <!-- Links -->
       <nav class="collapse navbar-collapse" id="mainNav">
         <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
           <li class="nav-item">
             <a class="nav-link active" href="./index.html">Browse</a>
           </li>
+
           <li class="nav-item">
             <a class="nav-link" href="./pages/my-listings.html">My Listings</a>
           </li>
+
           <li class="nav-item">
             <a class="nav-link" href="./pages/profile.html">Profile</a>
           </li>
 
-          <!-- SHOWN WHEN LOGGED OUT -->
+          <!-- LOGGED OUT -->
           <li class="nav-item ms-lg-3" data-auth="logged-out">
             <a href="./pages/login.html" class="btn btn-outline-light btn-sm">Log in</a>
           </li>
@@ -51,7 +117,7 @@
             <a href="./pages/register.html" class="btn btn-primary btn-sm">Sign up</a>
           </li>
 
-          <!-- SHOWN WHEN LOGGED IN -->
+          <!-- LOGGED IN -->
           <li class="nav-item ms-lg-3 d-none" data-auth="logged-in">
             <button id="nav-logout-btn" class="btn btn-outline-light btn-sm">
               Log out
@@ -61,7 +127,6 @@
       </nav>
     </div>
   </header>
-
 
   <main class="nook-page">
     <!-- HERO -->
@@ -212,7 +277,7 @@
                 </p>
                 <div class="d-flex justify-content-between align-items-center mt-2">
                   <span class="fw-semibold">Start bid · 0 ✧</span>
-                  
+
                   <!-- Harry Potter listing -->
                   <a href="pages/listing.html?id=7dcdde5c-d3dc-41eb-a4ad-148fc323f06a"
                     class="btn btn-outline-light btn-sm">

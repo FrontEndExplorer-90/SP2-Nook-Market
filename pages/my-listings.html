@@ -18,7 +18,7 @@
 
 <body>
   <!-- NAVBAR (same as index, but paths adjusted + active link) -->
-   <header class="navbar navbar-expand-lg navbar-dark bg-dark bg-opacity-75 border-bottom border-secondary fixed-top">
+  <header class="navbar navbar-expand-lg navbar-dark bg-dark bg-opacity-75 border-bottom border-secondary fixed-top">
     <div class="container">
       <a class="navbar-brand d-flex align-items-center gap-2" href="../index.html">
         <img src="https://i.postimg.cc/HWvz0myL/Logo-The-Nook-Market-redigert-redigert-redigert.webp"
@@ -85,7 +85,7 @@
         <a href="./create.html" class="btn btn-primary btn-lg">Create new listing</a>
       </header>
 
-      <!-- Filters / controls (later wired to JS) -->
+
       <div class="nook-card-glow p-3 p-md-4 mb-4">
         <form class="row g-3 align-items-end">
           <div class="col-md-4">
@@ -116,16 +116,16 @@
             </select>
           </div>
           <div class="col-md-2 d-grid">
-            <button type="button" class="btn btn-outline-light">
+            <button type="button" class="btn btn-outline-light" id="clear-my-listings-filters">
               Clear filters
             </button>
           </div>
+
         </form>
       </div>
 
-      <!-- Listings grid (static placeholders – later from API) -->
+
       <div class="row g-4" id="my-listings-grid">
-        <!-- JS will inject your own listings here -->
       </div>
 
       <p class="text-secondary mt-4 d-none" id="my-listings-empty">

@@ -9,6 +9,10 @@ const PROFILES_BASE = `${API_BASE}/auction/profiles`;
 
 const STORAGE_KEY_AUTH = "nookMarketAuth";
 
+let ALL_LISTINGS_CACHE = [];
+let MY_LISTINGS_CACHE = [];
+
+
 // ---------- Storage helpers ----------
 
 function saveAuth(data) {
@@ -1404,7 +1408,7 @@ function createListingCard(listing) {
     </div>
   `;
 }
-
+and 
 async function loadAllListings() {
   const grid = document.querySelector("#listings-grid");
   const emptyMessage = document.querySelector("#listings-empty-message");
@@ -1413,6 +1417,19 @@ async function loadAllListings() {
   const input = document.querySelector("#listings-search-input");
 
   if (!grid) return;
+
+  const matchesQuery = (listing, query) => {
+    const q = (query || "").trim().toLowerCase();
+    if (!q) return true;
+
+    const title = (listing.title || "").toLowerCase();
+    const desc = (listing.description || "").toLowerCase();
+    const tags = Array.isArray(listing.tags)
+      ? listing.tags.join(" ").toLowerCase()
+      : "";
+
+    return title.includes(q) || desc.includes(q) || tags.includes(q);
+  };
 
   const render = (items) => {
     if (!items.length) {
@@ -1464,9 +1481,13 @@ async function loadAllListings() {
 
     render(listings);
 
-    if (form && input) {
+    if (form && input && form.dataset.bound !== "true") {
+      form.dataset.bound = "true";
+
       const applyFilter = () => {
-        const filtered = listings.filter((l) => matchesQuery(l, input.value));
+        const filtered = listings.filter((l) =>
+          matchesQuery(l, input.value)
+        );
         render(filtered);
       };
 
@@ -1911,9 +1932,54 @@ function setupCreateListingForm() {
 async function loadMyListings() {
   const grid = document.querySelector("#my-listings-grid");
   const emptyMessage = document.querySelector("#my-listings-empty");
+
   const searchInput = document.querySelector("#search-my-listings");
+  const statusSelect = document.querySelector("#filter-status");
+  const sortSelect = document.querySelector("#filter-sort");
+  const clearBtn = document.querySelector("#clear-my-listings-filters");
 
   if (!grid) return;
+
+  const user = getAuthUser();
+  if (!user?.name) {
+    grid.innerHTML = `
+      <div class="col-12">
+        <p class="text-danger mb-0">You need to be logged in to see your listings.</p>
+      </div>
+    `;
+    if (emptyMessage) emptyMessage.classList.add("d-none");
+    return;
+  }
+
+  const matchesQuery = (listing, query) => {
+    const q = (query || "").trim().toLowerCase();
+    if (!q) return true;
+
+    const title = (listing.title || "").toLowerCase();
+    const desc = (listing.description || "").toLowerCase();
+    const tags = Array.isArray(listing.tags) ? listing.tags.join(" ").toLowerCase() : "";
+
+    return title.includes(q) || desc.includes(q) || tags.includes(q);
+  };
+
+  const getHighestBid = (listing) => {
+    const bids = Array.isArray(listing.bids) ? listing.bids : [];
+    return bids.reduce((max, b) => (typeof b.amount === "number" && b.amount > max ? b.amount : max), 0);
+  };
+
+  const UPCOMING_DAYS = 3;
+  const getStatus = (listing) => {
+    const now = new Date();
+    const ends = listing.endsAt ? new Date(listing.endsAt) : null;
+    if (!ends || Number.isNaN(ends.getTime())) return "unknown";
+
+    if (ends <= now) return "ended";
+
+    const upcomingCutoff = new Date(now.getTime() + UPCOMING_DAYS * 24 * 60 * 60 * 1000);
+    if (ends >= upcomingCutoff) return "upcoming";
+
+    return "active";
+  };
 
   const render = (items) => {
     if (!items.length) {
@@ -1925,33 +1991,17 @@ async function loadMyListings() {
     grid.innerHTML = items.map(createMyListingCard).join("");
   };
 
-  const user = getAuthUser();
-  if (!user || !user.name) {
-    grid.innerHTML = `
-      <div class="col-12">
-        <p class="text-danger mb-0">
-          You need to be logged in to see your listings.
-        </p>
-      </div>
-    `;
-    if (emptyMessage) emptyMessage.classList.add("d-none");
-    return;
-  }
-
-  const username = user.name;
-
   grid.innerHTML = `
     <div class="col-12">
-      <p class="text-secondary mb-0">
-        Fetching your listings from the archive…
-      </p>
+      <p class="text-secondary mb-0">Fetching your listings from the archive…</p>
     </div>
   `;
   if (emptyMessage) emptyMessage.classList.add("d-none");
 
   try {
+    
     const response = await fetch(
-      `${API_BASE}/auction/profiles/${encodeURIComponent(username)}/listings?_active=true&_bids=true&sort=endsAt&sortOrder=asc`,
+      `${API_BASE}/auction/profiles/${encodeURIComponent(user.name)}/listings?_bids=true&sort=endsAt&sortOrder=asc`,
       { headers: getAuthHeaders() }
     );
 
@@ -1961,9 +2011,7 @@ async function loadMyListings() {
       console.error("Failed to load my listings", json);
       grid.innerHTML = `
         <div class="col-12">
-          <p class="text-danger mb-0">
-            Couldn’t load your listings right now. Try again in a bit.
-          </p>
+          <p class="text-danger mb-0">Couldn’t load your listings right now. Try again in a bit.</p>
         </div>
       `;
       return;
@@ -1971,21 +2019,62 @@ async function loadMyListings() {
 
     const listings = Array.isArray(json.data) ? json.data : [];
 
-    render(listings);
+    const applyAll = () => {
+      const q = searchInput ? searchInput.value : "";
+      const statusVal = statusSelect ? statusSelect.value : "";
+      const sortVal = sortSelect ? sortSelect.value : "ending-soon";
 
-    if (searchInput) {
-      searchInput.addEventListener("input", () => {
-        const filtered = listings.filter((l) => matchesQuery(l, searchInput.value));
-        render(filtered);
+      let result = listings.filter((l) => matchesQuery(l, q));
+
+      if (statusVal) {
+        result = result.filter((l) => getStatus(l) === statusVal);
+      }
+
+      result = [...result].sort((a, b) => {
+        if (sortVal === "newest") {
+          return new Date(b.created).getTime() - new Date(a.created).getTime();
+        }
+        if (sortVal === "highest-bid") {
+          return getHighestBid(b) - getHighestBid(a);
+        }
+        
+        return new Date(a.endsAt).getTime() - new Date(b.endsAt).getTime();
+      });
+
+      render(result);
+    };
+
+    applyAll();
+
+    if (searchInput && searchInput.dataset.bound !== "true") {
+      searchInput.dataset.bound = "true";
+      searchInput.addEventListener("input", applyAll);
+    }
+
+    if (statusSelect && statusSelect.dataset.bound !== "true") {
+      statusSelect.dataset.bound = "true";
+      statusSelect.addEventListener("change", applyAll);
+    }
+
+    if (sortSelect && sortSelect.dataset.bound !== "true") {
+      sortSelect.dataset.bound = "true";
+      sortSelect.addEventListener("change", applyAll);
+    }
+
+    if (clearBtn && clearBtn.dataset.bound !== "true") {
+      clearBtn.dataset.bound = "true";
+      clearBtn.addEventListener("click", () => {
+        if (searchInput) searchInput.value = "";
+        if (statusSelect) statusSelect.value = "";
+        if (sortSelect) sortSelect.value = "ending-soon";
+        applyAll();
       });
     }
   } catch (error) {
     console.error("Error loading my listings", error);
     grid.innerHTML = `
       <div class="col-12">
-        <p class="text-danger mb-0">
-          Something went wrong while loading your listings.
-        </p>
+        <p class="text-danger mb-0">Something went wrong while loading your listings.</p>
       </div>
     `;
   }

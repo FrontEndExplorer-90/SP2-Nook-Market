@@ -55,7 +55,6 @@ function getApiKey() {
 
 
 async function ensureApiKey(authData) {
-
   if (!authData || !authData.data || !authData.data.accessToken) {
     return authData;
   }
@@ -90,7 +89,6 @@ async function ensureApiKey(authData) {
   return authData;
 }
 
-
 async function ensureApiKeyOnLoad() {
   const auth = getAuth();
   if (!auth || !auth.data) return;
@@ -122,6 +120,19 @@ function getAuthHeaders(includeJson = false) {
   return headers;
 }
 
+// ------------ Search helper (title + description + tags)--------
+
+const matchesQuery = (listing, q) => {
+  const query = (q || "").trim().toLowerCase();
+  if (!query) return true;
+
+  const title = (listing.title || "").toLowerCase();
+  const desc = (listing.description || "").toLowerCase();
+  const tags = Array.isArray(listing.tags) ? listing.tags.join(" ").toLowerCase() : "";
+
+  return title.includes(query) || desc.includes(query) || tags.includes(query);
+};
+
 
 // ---------- DOM bootstrapping ----------
 
@@ -146,6 +157,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     .forEach((btn) => btn.addEventListener("click", handleLogout));
 
   hydrateProfileFromAuth();
+  hydrateBannerFromAuth();
   hydrateNavbarAuth();
   updateNavbarAuthState();
 
@@ -192,7 +204,6 @@ function setupRegisterForm(form) {
       nameInput.classList.add("is-invalid");
       isValid = false;
     }
-
 
     const validDomain =
       emailValue.endsWith("@stud.noroff.no") || emailValue.endsWith("@noroff.no");
@@ -358,9 +369,10 @@ function setupLoginForm(form) {
           console.warn("API key creation failed:", err);
         }
 
-
         saveAuth(userData);
+        await refreshAuthProfile();
         window.location.href = "./profile.html";
+
       }
     } catch (error) {
       console.error("Login exception:", error);
@@ -551,7 +563,7 @@ async function loadProfileBids(username) {
     const response = await fetch(
       `${API_BASE}/auction/profiles/${encodeURIComponent(
         username
-      )}/bids?_listings=true&_bids=true&sort=created&sortOrder=desc`,
+      )}/bids?_listings=true&sort=created&sortOrder=desc`,
       {
         headers: getAuthHeaders(),
       }
@@ -594,7 +606,7 @@ async function loadMyBidsPage() {
 
   const user = getAuthUser();
 
-  // Not logged in
+
   if (!user || !user.name) {
     listEl.innerHTML = "";
     if (emptyMessage) emptyMessage.classList.add("d-none");
@@ -602,7 +614,7 @@ async function loadMyBidsPage() {
     return;
   }
 
-  // Logged in – fetch bids
+
   if (notLoggedInAlert) notLoggedInAlert.classList.add("d-none");
   listEl.innerHTML =
     '<li class="small text-secondary">Fetching your bids…</li>';
@@ -612,7 +624,7 @@ async function loadMyBidsPage() {
     const response = await fetch(
       `${API_BASE}/auction/profiles/${encodeURIComponent(
         user.name
-      )}/bids?_listings=true&_bids=true&sort=created&sortOrder=desc`,
+      )}/bids?_listings=true&sort=created&sortOrder=desc`,
       {
         headers: getAuthHeaders(),
       }
@@ -653,7 +665,9 @@ function setupProfileEditForm() {
   if (!form) return;
 
   const avatarInput = document.querySelector("#profile-avatar-url");
+  const bannerInput = document.querySelector("#profile-banner-url");
   const bioInput = document.querySelector("#profile-bio");
+
   const errorEl = document.querySelector("#profile-edit-error");
   const successEl = document.querySelector("#profile-edit-success");
   const resetBtn = document.querySelector("#profile-edit-reset");
@@ -661,11 +675,11 @@ function setupProfileEditForm() {
   const user = getAuthUser();
   const token = getAccessToken();
 
-
   if (!user || !token) {
     form.classList.add("opacity-50");
     const submitBtn = form.querySelector("button[type='submit']");
     if (submitBtn) submitBtn.disabled = true;
+
     if (errorEl) {
       errorEl.textContent = "You need to be logged in to edit your profile.";
       errorEl.classList.remove("d-none");
@@ -673,8 +687,8 @@ function setupProfileEditForm() {
     return;
   }
 
-
   if (avatarInput) avatarInput.value = user.avatar?.url || "";
+  if (bannerInput) bannerInput.value = user.banner?.url || "";
   if (bioInput) bioInput.value = user.bio || "";
 
   function clearMessages() {
@@ -691,6 +705,7 @@ function setupProfileEditForm() {
     resetBtn.addEventListener("click", () => {
       clearMessages();
       if (avatarInput) avatarInput.value = user.avatar?.url || "";
+      if (bannerInput) bannerInput.value = user.banner?.url || "";
       if (bioInput) bioInput.value = user.bio || "";
     });
   }
@@ -700,25 +715,31 @@ function setupProfileEditForm() {
     clearMessages();
 
     const avatarUrl = avatarInput ? avatarInput.value.trim() : "";
+    const bannerUrl = bannerInput ? bannerInput.value.trim() : "";
     const bio = bioInput ? bioInput.value.trim() : "";
 
-
+    
     const payload = {};
 
     if (avatarUrl) {
-      payload.avatar = {
-        url: avatarUrl,
-        alt: `Avatar of ${user.name}`,
-      };
-    } else {
+      payload.avatar = { url: avatarUrl, alt: `Avatar of ${user.name}` };
+    }
 
-      payload.avatar = null;
+    if (bannerUrl) {
+      payload.banner = { url: bannerUrl, alt: `Banner of ${user.name}` };
     }
 
     if (bio) {
       payload.bio = bio;
-    } else {
-      payload.bio = null;
+    }
+
+    if (!Object.keys(payload).length) {
+      if (errorEl) {
+        errorEl.textContent =
+          "Nothing to update yet — add a banner/avatar/bio first.";
+        errorEl.classList.remove("d-none");
+      }
+      return;
     }
 
     const submitBtn = form.querySelector("button[type='submit']");
@@ -732,7 +753,7 @@ function setupProfileEditForm() {
         `${API_BASE}/auction/profiles/${encodeURIComponent(user.name)}`,
         {
           method: "PUT",
-          headers: getAuthHeaders(true),
+          headers: getAuthHeaders(true), 
           body: JSON.stringify(payload),
         }
       );
@@ -741,6 +762,7 @@ function setupProfileEditForm() {
 
       if (!response.ok) {
         console.error("Profile update failed", json);
+
         if (errorEl) {
           const msg =
             (json.errors && json.errors.map((e) => e.message).join(" ")) ||
@@ -753,16 +775,20 @@ function setupProfileEditForm() {
       }
 
       const updatedUser = json.data;
-
-      /
       const auth = getAuth();
+
       if (auth && auth.data) {
+  
+        updatedUser.accessToken = auth.data.accessToken;
+        updatedUser.apiKey = auth.data.apiKey;
+
         auth.data = updatedUser;
         saveAuth(auth);
       }
 
-
       hydrateProfileFromAuth();
+      hydrateBannerFromAuth();
+    
 
       if (successEl) {
         successEl.classList.remove("d-none");
@@ -783,6 +809,7 @@ function setupProfileEditForm() {
   });
 }
 
+
 function hydrateNavbarAuth() {
   const user = getAuthUser();
 
@@ -792,11 +819,14 @@ function hydrateNavbarAuth() {
   const logoutItem = document.querySelector("#nav-logout-item");
   const creditsAmount = document.querySelector("#nav-credits-amount");
 
+  if (!loginItem && !creditsItem) return;
+
   const isLoggedIn = !!user;
 
 
   if (loginItem) loginItem.classList.toggle("d-none", isLoggedIn);
   if (registerItem) registerItem.classList.toggle("d-none", isLoggedIn);
+
 
   if (creditsItem) creditsItem.classList.toggle("d-none", !isLoggedIn);
   if (logoutItem) logoutItem.classList.toggle("d-none", !isLoggedIn);
@@ -1059,7 +1089,7 @@ function setupEditListingForm() {
     }
   });
 
-
+  // Delete listing
   if (deleteBtn) {
     deleteBtn.addEventListener("click", async () => {
       clearMessages();
@@ -1112,61 +1142,6 @@ function createProfileBidItem(bid) {
   const date = bid.created ? new Date(bid.created) : null;
   const dateLabel = date ? date.toLocaleString() : "";
 
-  const user = getAuthUser();
-  const username = user?.name;
-
-  const allListingBids = Array.isArray(listing.bids) ? listing.bids : [];
-  const highestBidObj = allListingBids.reduce(
-    (max, item) =>
-      typeof item.amount === "number" && item.amount > (max?.amount ?? 0)
-        ? item
-        : max,
-    null
-  );
-
-  const highestAmount = highestBidObj?.amount ?? 0;
-  const userIsHighest =
-    highestBidObj?.bidder?.name &&
-    username &&
-    highestBidObj.bidder.name === username;
-
-  const userHasBid = allListingBids.some(
-    (item) => item.bidder?.name === username
-  );
-
-  const endsAt = listing.endsAt ? new Date(listing.endsAt) : null;
-  const now = new Date();
-  const isExpired = endsAt && endsAt < now;
-
-  let statusLabel = "";
-  let statusClass = "bg-secondary";
-
-  if (isExpired) {
-    if (userIsHighest) {
-      statusLabel = "Won";
-      statusClass = "bg-success";
-    } else if (userHasBid) {
-      statusLabel = "Lost";
-      statusClass = "bg-danger";
-    } else {
-      statusLabel = "Ended";
-      statusClass = "bg-secondary";
-    }
-  } else {
-    if (userIsHighest) {
-      statusLabel = "Currently winning";
-      statusClass = "bg-info";
-    } else if (userHasBid) {
-      statusLabel = "Outbid";
-      statusClass = "bg-warning text-dark";
-    } else {
-      statusLabel = "Active";
-      statusClass = "bg-secondary";
-    }
-  }
-
-  const endsLabel = listing.endsAt ? getEndsLabel(listing.endsAt) : "";
-
   return `
     <li class="d-flex align-items-center gap-3 py-2 border-bottom border-secondary-subtle">
       <img
@@ -1176,24 +1151,13 @@ function createProfileBidItem(bid) {
         style="width: 56px; height: 56px; object-fit: cover;"
       />
       <div class="flex-grow-1">
-        <p class="small mb-1 d-flex justify-content-between align-items-center">
-          <span><strong>${listing.title || "Listing"}</strong></span>
-          ${statusLabel
-      ? `<span class="badge ${statusClass}">${statusLabel}</span>`
-      : ""
-    }
+        <p class="small mb-1">
+          <strong>${listing.title || "Listing"}</strong>
         </p>
-        <p class="small text-secondary mb-1">
+        <p class="small text-secondary mb-0">
           Your bid: <strong>${bid.amount} ✧</strong>
-          ${highestAmount
-      ? ` · Highest: <strong>${highestAmount} ✧</strong>`
-      : ""
-    }
+          ${dateLabel ? ` · <span>${dateLabel}</span>` : ""}
         </p>
-        ${endsLabel
-      ? `<p class="small text-secondary mb-0">${endsLabel}</p>`
-      : ""
-    }
       </div>
       <div>
         <a
@@ -1207,7 +1171,6 @@ function createProfileBidItem(bid) {
   `;
 }
 
-
 // ---------- Profile hydration ----------
 
 function hydrateProfileFromAuth() {
@@ -1219,9 +1182,11 @@ function hydrateProfileFromAuth() {
   const creditsEl = document.querySelector("#profile-credits");
   const avatarEl = document.querySelector("#profile-avatar");
   const navCreditsEl = document.querySelector("#nav-credits-amount");
+  const bannerEl = document.querySelector("#profile-banner");
 
   if (usernameEl && user.name) usernameEl.textContent = user.name;
   if (emailEl && user.email) emailEl.textContent = user.email;
+
   if (creditsEl && typeof user.credits === "number") {
     creditsEl.textContent = `${user.credits} ✧`;
   }
@@ -1240,7 +1205,35 @@ function hydrateProfileFromAuth() {
       avatarEl.textContent = (user.name || "NM").slice(0, 2).toUpperCase();
     }
   }
+
+  if (bannerEl) {
+    if (user.banner && user.banner.url) {
+      bannerEl.style.backgroundImage = `url("${user.banner.url}")`;
+      bannerEl.style.backgroundSize = "cover";
+      bannerEl.style.backgroundPosition = "center";
+    } else {
+      bannerEl.style.backgroundImage = "none";
+    }
+  }
 }
+
+function hydrateBannerFromAuth() {
+  const user = getAuthUser();
+  if (!user) return;
+
+  const bannerEl = document.querySelector("#profile-banner");
+  if (!bannerEl) return;
+
+  if (user.banner && user.banner.url) {
+    bannerEl.style.backgroundImage = `url("${user.banner.url}")`;
+    bannerEl.style.backgroundSize = "cover";
+    bannerEl.style.backgroundPosition = "center";
+  } else {
+    bannerEl.style.backgroundImage = "";
+  }
+}
+
+
 
 
 // ---------- Logout + error helper ----------
@@ -1316,7 +1309,6 @@ function updateNavbarAuthState() {
 // ---------- LISTINGS: helpers ----------
 
 const AUCTION_LISTINGS_URL = `${API_BASE}/auction/listings`;
-
 
 const FALLBACK_IMAGE =
   "https://i.postimg.cc/HWvz0myL/Logo-The-Nook-Market-redigert-redigert-redigert.webp";
@@ -1417,11 +1409,22 @@ async function loadAllListings() {
   const grid = document.querySelector("#listings-grid");
   const emptyMessage = document.querySelector("#listings-empty-message");
 
+  const form = document.querySelector("#listings-search-form");
+  const input = document.querySelector("#listings-search-input");
+
   if (!grid) return;
 
-  if (emptyMessage) {
-    emptyMessage.classList.add("d-none");
-  }
+  const render = (items) => {
+    if (!items.length) {
+      grid.innerHTML = "";
+      if (emptyMessage) emptyMessage.classList.remove("d-none");
+      return;
+    }
+    if (emptyMessage) emptyMessage.classList.add("d-none");
+    grid.innerHTML = items.map(createListingCard).join("");
+  };
+
+  if (emptyMessage) emptyMessage.classList.add("d-none");
 
   grid.innerHTML = `
     <div class="col-12">
@@ -1459,15 +1462,21 @@ async function loadAllListings() {
 
     const listings = Array.isArray(json.data) ? json.data : [];
 
-    if (!listings.length) {
-      grid.innerHTML = "";
-      if (emptyMessage) {
-        emptyMessage.classList.remove("d-none");
-      }
-      return;
-    }
+    render(listings);
 
-    grid.innerHTML = listings.map(createListingCard).join("");
+    if (form && input) {
+      const applyFilter = () => {
+        const filtered = listings.filter((l) => matchesQuery(l, input.value));
+        render(filtered);
+      };
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        applyFilter();
+      });
+
+      input.addEventListener("input", applyFilter);
+    }
   } catch (error) {
     console.error("Error loading listings", error);
     grid.innerHTML = `
@@ -1477,6 +1486,40 @@ async function loadAllListings() {
         </p>
       </div>
     `;
+  }
+}
+
+
+async function refreshAuthProfile() {
+  const auth = getAuth();
+  const user = auth?.data;
+  if (!user?.name) return null;
+
+  try {
+    const res = await fetch(
+      `${API_BASE}/auction/profiles/${encodeURIComponent(user.name)}`,
+      { headers: getAuthHeaders() }
+    );
+
+    const json = await res.json();
+
+    if (!res.ok || !json?.data) {
+      console.warn("Could not refresh profile", json);
+      return null;
+    }
+
+
+    auth.data = { ...auth.data, ...json.data };
+    saveAuth(auth);
+
+
+    if (typeof hydrateProfileFromAuth === "function") hydrateProfileFromAuth();
+    if (typeof updateNavbarAuthState === "function") updateNavbarAuthState();
+
+    return auth.data;
+  } catch (err) {
+    console.warn("refreshAuthProfile failed", err);
+    return null;
   }
 }
 
@@ -1616,7 +1659,6 @@ async function loadSingleListingPage() {
       endsEl.textContent = endDate.toLocaleString();
     }
 
-
     if (bidsListEl) {
       const bids = Array.isArray(listing.bids) ? listing.bids : [];
       bidsListEl.innerHTML = "";
@@ -1651,39 +1693,6 @@ async function loadSingleListingPage() {
   }
 }
 
-async function refreshProfileFromServer() {
-  const user = getAuthUser();
-  const token = getAccessToken();
-  if (!user || !token) return;
-
-  try {
-    const response = await fetch(
-      `${PROFILES_BASE}/${encodeURIComponent(user.name)}`,
-      { headers: getAuthHeaders() }
-    );
-
-    const json = await response.json();
-
-    if (!response.ok) {
-      console.error("Failed to refresh profile", json);
-      return;
-    }
-
-    const updatedProfile = json.data;
-    const auth = getAuth();
-    if (auth && auth.data) {
-      auth.data = { ...auth.data, ...updatedProfile };
-      saveAuth(auth);
-    }
-
-
-    hydrateProfileFromAuth();
-    hydrateNavbarAuth();
-  } catch (error) {
-    console.error("Error refreshing profile", error);
-  }
-}
-
 
 function setupBidForm(listingId, currentHighestBid) {
   const form = document.querySelector("#bid-form");
@@ -1693,7 +1702,6 @@ function setupBidForm(listingId, currentHighestBid) {
   if (!form || !amountInput) return;
 
   const token = getAccessToken();
-
 
   if (!token) {
     form.classList.add("opacity-50");
@@ -1719,18 +1727,20 @@ function setupBidForm(listingId, currentHighestBid) {
       return;
     }
 
-    try {
+    const submitBtn = form.querySelector("button[type='submit']");
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Placing bid…";
+    }
 
+    try {
       const headers = getAuthHeaders(true);
 
-      const response = await fetch(
-        `${AUCTION_LISTINGS_URL}/${listingId}/bids`,
-        {
-          method: "POST",
-          headers,
-          body: JSON.stringify({ amount }),
-        }
-      );
+      const response = await fetch(`${AUCTION_LISTINGS_URL}/${listingId}/bids`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ amount }),
+      });
 
       const json = await response.json();
 
@@ -1746,7 +1756,8 @@ function setupBidForm(listingId, currentHighestBid) {
         return;
       }
 
-      await refreshProfileFromServer()
+      await refreshAuthProfile();
+
       window.location.reload();
     } catch (error) {
       console.error("Error placing bid", error);
@@ -1754,9 +1765,15 @@ function setupBidForm(listingId, currentHighestBid) {
         errorEl.textContent =
           "Something went wrong while placing your bid. Try again in a moment.";
       }
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Place bid";
+      }
     }
   });
 }
+
 
 
 // ---------- Create Listings ----------
@@ -1773,7 +1790,6 @@ function setupCreateListingForm() {
   );
   const endsAtInput = document.querySelector("#create-ends-at");
   const errorEl = document.querySelector("#create-error");
-
 
   const token = getAccessToken();
   const apiKey = getApiKey();
@@ -1895,9 +1911,19 @@ function setupCreateListingForm() {
 async function loadMyListings() {
   const grid = document.querySelector("#my-listings-grid");
   const emptyMessage = document.querySelector("#my-listings-empty");
+  const searchInput = document.querySelector("#search-my-listings");
 
   if (!grid) return;
 
+  const render = (items) => {
+    if (!items.length) {
+      grid.innerHTML = "";
+      if (emptyMessage) emptyMessage.classList.remove("d-none");
+      return;
+    }
+    if (emptyMessage) emptyMessage.classList.add("d-none");
+    grid.innerHTML = items.map(createMyListingCard).join("");
+  };
 
   const user = getAuthUser();
   if (!user || !user.name) {
@@ -1925,12 +1951,8 @@ async function loadMyListings() {
 
   try {
     const response = await fetch(
-      `${API_BASE}/auction/profiles/${encodeURIComponent(
-        username
-      )}/listings?_active=true&_bids=true&sort=endsAt&sortOrder=asc`,
-      {
-        headers: getAuthHeaders(),
-      }
+      `${API_BASE}/auction/profiles/${encodeURIComponent(username)}/listings?_active=true&_bids=true&sort=endsAt&sortOrder=asc`,
+      { headers: getAuthHeaders() }
     );
 
     const json = await response.json();
@@ -1949,13 +1971,14 @@ async function loadMyListings() {
 
     const listings = Array.isArray(json.data) ? json.data : [];
 
-    if (!listings.length) {
-      grid.innerHTML = "";
-      if (emptyMessage) emptyMessage.classList.remove("d-none");
-      return;
-    }
+    render(listings);
 
-    grid.innerHTML = listings.map(createMyListingCard).join("");
+    if (searchInput) {
+      searchInput.addEventListener("input", () => {
+        const filtered = listings.filter((l) => matchesQuery(l, searchInput.value));
+        render(filtered);
+      });
+    }
   } catch (error) {
     console.error("Error loading my listings", error);
     grid.innerHTML = `
@@ -1967,6 +1990,7 @@ async function loadMyListings() {
     `;
   }
 }
+
 
 function createMyListingCard(listing) {
   const { url, alt } = getPrimaryImage(listing);

@@ -1,18 +1,22 @@
+// js/auth/login.js
 import { AUTH_URL } from "../utils/api.js";
 
 export async function loginUser(email, password) {
   const response = await fetch(`${AUTH_URL}/login`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ email, password })
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
   });
 
+  const data = await response.json().catch(() => ({}));
+
   if (!response.ok) {
-    throw new Error("Login failed");
+    const msg =
+      (data?.errors && data.errors.map((e) => e.message).join(" ")) ||
+      data?.message ||
+      "Login failed.";
+    throw new Error(msg);
   }
 
-  const data = await response.json();
   return data;
 }

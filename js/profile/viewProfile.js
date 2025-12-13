@@ -1,8 +1,30 @@
 // js/profile/viewProfile.js
 import { PROFILES_BASE } from "../utils/api.js";
 
-import { getAuthUser, getAuthHeaders } from "../utils/storage.js";
+import { getAuthUser, getAuthHeaders, getAuth, saveAuth } from "../utils/storage.js";
 import { getPrimaryImage, getHighestBidAmount, getEndsLabel, truncateText } from "../ui/renderListings.js";
+
+export async function refreshProfileFromApi() {
+  const user = getAuthUser();
+  if (!user?.name) return;
+
+  try {
+    const res = await fetch(`${PROFILES_BASE}/${encodeURIComponent(user.name)}`, {
+      headers: getAuthHeaders(),
+    });
+
+    const json = await res.json();
+    if (!res.ok || !json?.data) return;
+    
+    const auth = getAuth();
+    if (!auth?.data) return;
+
+    auth.data = { ...auth.data, ...json.data };
+    saveAuth(auth);
+  } catch (e) {
+    console.error("refreshProfileFromApi failed:", e);
+  }
+}
 
 export function hydrateProfileFromAuth() {
   const user = getAuthUser();
@@ -60,6 +82,7 @@ export function hydrateBannerFromAuth() {
   }
 }
 
+
 export async function loadProfilePage() {
   const profilePage = document.querySelector("#profile-page");
   if (!profilePage) return;
@@ -74,12 +97,19 @@ export async function loadProfilePage() {
 
   if (notLoggedInAlert) notLoggedInAlert.classList.add("d-none");
 
-  // Render base info (also safe to call hydration)
+  await refreshProfileFromApi();
+ 
+  const freshUser = getAuthUser();
+
   hydrateProfileFromAuth();
   hydrateBannerFromAuth();
 
-  await Promise.all([loadProfileListings(user.name), loadProfileBids(user.name)]);
+  await Promise.all([
+    loadProfileListings(freshUser.name),
+    loadProfileBids(freshUser.name),
+  ]);
 }
+
 
 async function loadProfileListings(username) {
   const listContainer = document.querySelector("#profile-my-listings");

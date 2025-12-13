@@ -1,5 +1,6 @@
 // js/listings/displayListings.js
-import { AUCTION_LISTINGS_URL } from "../utils/app.js";
+import { AUCTION_LISTINGS_URL } from "../utils/api.js" ; 
+
 import { getAuthUser } from "../utils/storage.js";
 import { getQueryParam, matchesQuery } from "../utils/filters.js";
 import { createListingCard, getPrimaryImage, getHighestBidAmount } from "../ui/renderListings.js";

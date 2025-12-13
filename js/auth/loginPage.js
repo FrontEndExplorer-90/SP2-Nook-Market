@@ -20,7 +20,7 @@ export function setupLoginForm(formEl = document.querySelector("#login-form")) {
     const email = emailInput?.value.trim() || "";
     const password = passwordInput?.value.trim() || "";
 
-    // reset UI
+    
     [emailInput, passwordInput].forEach((i) => i?.classList.remove("is-invalid"));
     showFormError(form, "");
 
@@ -48,13 +48,9 @@ export function setupLoginForm(formEl = document.querySelector("#login-form")) {
     try {
       const data = await loginUser(email, password);
 
-      // store auth response (token etc.)
       saveAuth(data);
 
-      // ensure API key exists (your storage helper should create it if missing)
       await ensureApiKeyOnLoad();
-
-      // refresh profile so credits/avatar/banner load correctly
       await refreshAuthProfile();
 
       window.location.href = "./profile.html";

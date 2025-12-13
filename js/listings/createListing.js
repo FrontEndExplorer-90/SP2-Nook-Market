@@ -1,5 +1,6 @@
 // js/listings/createListing.js
-import { AUCTION_LISTINGS_URL } from "../utils/app.js";
+import { AUCTION_LISTINGS_URL } from "../utils/api.js";
+
 import { getAccessToken, getApiKey, getAuthHeaders } from "../utils/storage.js";
 
 export function setupCreateListingForm() {

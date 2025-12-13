@@ -1,5 +1,6 @@
 // js/listings/editListing.js
-import { AUCTION_LISTINGS_URL } from "../utils/app.js";
+import { AUCTION_LISTINGS_URL } from "../utils/api.js";
+
 import { getQueryParam } from "../utils/filters.js";
 import { getAccessToken, getAuthUser, getAuthHeaders } from "../utils/storage.js";
 

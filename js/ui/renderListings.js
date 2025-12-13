@@ -1,5 +1,7 @@
 // js/ui/renderListings.js
-import { FALLBACK_IMAGE } from "../utils/app.js";
+
+const FALLBACK_IMAGE =
+  "https://i.postimg.cc/HWvz0myL/Logo-The-Nook-Market-redigert-redigert-redigert.webp";
 
 export function truncateText(text, maxLength = 120) {
   if (!text) return "";

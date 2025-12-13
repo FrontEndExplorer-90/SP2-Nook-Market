@@ -1,5 +1,5 @@
 // js/listings/renderListings.js
-import { PROFILES_BASE } from "../utils/app.js";
+import { PROFILES_BASE } from "../utils/api.js";
 import { getAuthUser, getAuthHeaders } from "../utils/storage.js";
 import { matchesQuery } from "../utils/filters.js";
 import { createMyListingCard, getHighestBidAmount } from "../ui/renderListings.js";

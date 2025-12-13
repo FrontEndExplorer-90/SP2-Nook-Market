@@ -1,6 +1,8 @@
 // js/utils/storage.js
 
-import { STORAGE_KEY_AUTH, AUTH_CREATE_API_KEY } from "./app.js";
+import { API_KEY_V2_URL } from "./api.js";
+
+export const STORAGE_KEY_AUTH = "nookMarketAuth";
 
 // ---------- Storage helpers ----------
 
@@ -12,6 +14,7 @@ export function saveAuth(data) {
 export function getAuth() {
   const raw = localStorage.getItem(STORAGE_KEY_AUTH);
   if (!raw) return null;
+
   try {
     return JSON.parse(raw);
   } catch {
@@ -27,23 +30,17 @@ export function clearAuth() {
 
 export function getAuthUser() {
   const auth = getAuth();
-  return auth && auth.data ? auth.data : null;
+  return auth?.data ?? null;
 }
 
 export function getAccessToken() {
   const auth = getAuth();
-  if (auth && auth.data && auth.data.accessToken) {
-    return auth.data.accessToken;
-  }
-  return null;
+  return auth?.data?.accessToken ?? null;
 }
 
 export function getApiKey() {
   const auth = getAuth();
-  if (auth && auth.data && auth.data.apiKey) {
-    return auth.data.apiKey;
-  }
-  return null;
+  return auth?.data?.apiKey ?? null;
 }
 
 export function getAuthHeaders(includeJson = false) {
@@ -51,15 +48,9 @@ export function getAuthHeaders(includeJson = false) {
   const token = getAccessToken();
   const apiKey = getApiKey();
 
-  if (includeJson) {
-    headers["Content-Type"] = "application/json";
-  }
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
-  }
-  if (apiKey) {
-    headers["X-Noroff-API-Key"] = apiKey;
-  }
+  if (includeJson) headers["Content-Type"] = "application/json";
+  if (token) headers.Authorization = `Bearer ${token}`;
+  if (apiKey) headers["X-Noroff-API-Key"] = apiKey;
 
   return headers;
 }
@@ -67,16 +58,11 @@ export function getAuthHeaders(includeJson = false) {
 // ---------- API Key helpers ----------
 
 export async function ensureApiKey(authData) {
-  if (!authData || !authData.data || !authData.data.accessToken) {
-    return authData;
-  }
-
-  if (authData.data.apiKey) {
-    return authData;
-  }
+  if (!authData?.data?.accessToken) return authData;
+  if (authData.data.apiKey) return authData;
 
   try {
-    const response = await fetch(AUTH_CREATE_API_KEY, {
+    const response = await fetch(API_KEY_V2_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -87,7 +73,7 @@ export async function ensureApiKey(authData) {
 
     const json = await response.json();
 
-    if (response.ok && json.data && json.data.key) {
+    if (response.ok && json?.data?.key) {
       authData.data.apiKey = json.data.key;
       saveAuth(authData);
     } else {
@@ -102,7 +88,7 @@ export async function ensureApiKey(authData) {
 
 export async function ensureApiKeyOnLoad() {
   const auth = getAuth();
-  if (!auth || !auth.data) return;
+  if (!auth?.data) return;
 
   const hasToken = !!auth.data.accessToken;
   const hasKey = !!auth.data.apiKey;

@@ -1,5 +1,6 @@
 // js/profile/viewProfile.js
-import { API_BASE } from "../utils/app.js";
+import { PROFILES_BASE } from "../utils/api.js";
+
 import { getAuthUser, getAuthHeaders } from "../utils/storage.js";
 import { getPrimaryImage, getHighestBidAmount, getEndsLabel, truncateText } from "../ui/renderListings.js";
 
@@ -94,7 +95,7 @@ async function loadProfileListings(username) {
 
   try {
     const response = await fetch(
-      `${API_BASE}/auction/profiles/${encodeURIComponent(username)}/listings?_bids=true&sort=endsAt&sortOrder=asc`,
+      `${PROFILES_BASE}/${encodeURIComponent(username)}/listings?_bids=true&sort=endsAt&sortOrder=asc`,
       { headers: getAuthHeaders() }
     );
 
@@ -172,7 +173,7 @@ async function loadProfileBids(username) {
 
   try {
     const response = await fetch(
-      `${API_BASE}/auction/profiles/${encodeURIComponent(username)}/bids?_listings=true&sort=created&sortOrder=desc`,
+      `${PROFILES_BASE}/${encodeURIComponent(username)}/bids?_listings=true&sort=created&sortOrder=desc`,
       { headers: getAuthHeaders() }
     );
 

@@ -1,5 +1,6 @@
 // js/bids/getBids.js
-import { API_BASE } from "../utils/app.js";
+import { PROFILES_BASE } from "../utils/api.js";
+
 import { getAuthUser, getAuthHeaders } from "../utils/storage.js";
 import { getPrimaryImage } from "../ui/renderListings.js";
 
@@ -24,12 +25,11 @@ export async function loadMyBidsPage() {
   if (emptyMessage) emptyMessage.classList.add("d-none");
 
   try {
-    const response = await fetch(
-      `${API_BASE}/auction/profiles/${encodeURIComponent(
-        user.name
-      )}/bids?_listings=true&sort=created&sortOrder=desc`,
-      { headers: getAuthHeaders() }
-    );
+   const response = await fetch(
+  `${PROFILES_BASE}/${encodeURIComponent(user.name)}/bids?_listings=true&sort=created&sortOrder=desc`,
+  { headers: getAuthHeaders() }
+);
+
 
     const json = await response.json();
 

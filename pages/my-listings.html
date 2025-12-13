@@ -7,17 +7,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="Manage your auctions at The Nook Market – view, edit, and create listings." />
 
-  <!-- Compiled Bootstrap + custom styles -->
   <link rel="stylesheet" href="../css/main.css" />
 
-  <!-- Google Fonts -->
   <link
     href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cormorant+Garamond:wght@400;500;600&display=swap"
     rel="stylesheet" />
 </head>
 
-<body>
-  <!-- NAVBAR (same as index, but paths adjusted + active link) -->
+<body data-auth="required">
   <header class="navbar navbar-expand-lg navbar-dark bg-dark bg-opacity-75 border-bottom border-secondary fixed-top">
     <div class="container">
       <a class="navbar-brand d-flex align-items-center gap-2" href="../index.html">
@@ -137,7 +134,8 @@
 
   <!-- Bootstrap JS + your main JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="../js/main.js"></script>
+  <script type="module" src="../js/main.js"></script>
+
 </body>
 
 </html>

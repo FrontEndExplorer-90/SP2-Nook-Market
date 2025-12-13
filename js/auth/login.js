@@ -1,8 +1,8 @@
 // js/auth/login.js
-import { AUTH_URL } from "../utils/api.js";
+import { AUTH_V2_URL } from "../utils/api.js";
 
 export async function loginUser(email, password) {
-  const response = await fetch(`${AUTH_URL}/login`, {
+  const response = await fetch(`${AUTH_V2_URL}/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),

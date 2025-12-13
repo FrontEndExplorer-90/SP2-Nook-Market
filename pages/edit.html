@@ -1,178 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Edit listing – The Nook Market</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- Bootstrap & your main CSS – use same as other pages -->
-    <link rel="stylesheet" href="../css/main.css" />
-  </head>
-  <body class="bg-dark text-light">
-    <!-- NAVBAR (copy the exact same header you use on other pages) -->
-    <header class="navbar navbar-expand-lg navbar-dark bg-dark bg-opacity-75 border-bottom border-secondary fixed-top">
+<head>
+  <meta charset="UTF-8" />
+  <title>Edit listing – The Nook Market</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link rel="stylesheet" href="../css/main.css" />
+</head>
+
+<body data-auth="required" class="bg-dark text-light">
+  <header class="navbar navbar-expand-lg navbar-dark bg-dark bg-opacity-75 border-bottom border-secondary fixed-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="../index.html">
+        <img src="https://i.postimg.cc/HWvz0myL/Logo-The-Nook-Market-redigert-redigert-redigert.webp"
+          alt="The Nook Market logo" class="nook-logo-img" />
+        <span class="nook-logo">The Nook Market</span>
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+        aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <nav class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+          <li class="nav-item">
+            <a class="nav-link" href="./listings.html">Browse</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="./my-listings.html">My Listings</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="./profile.html">Profile</a>
+          </li>
+
+          <!-- LOGIN / SIGNUP (shown when logged OUT) -->
+          <li class="nav-item ms-lg-3" id="nav-login-item">
+            <a href="./login.html" id="nav-login-link" class="btn btn-outline-light btn-sm">
+              Log in
+            </a>
+          </li>
+          <li class="nav-item ms-2" id="nav-register-item">
+            <a href="./register.html" id="nav-register-link" class="btn btn-primary btn-sm">
+              Sign up
+            </a>
+          </li>
+
+          <!-- CREDITS + LOGOUT (shown when logged IN) -->
+          <li class="nav-item ms-lg-3 d-none" id="nav-credits-item">
+            <span class="badge rounded-pill nook-credits-pill">
+              <span class="small me-1">Credits</span>
+              <span id="nav-credits-amount">0 ✧</span>
+            </span>
+          </li>
+          <li class="nav-item ms-2 d-none" id="nav-logout-item">
+            <button id="nav-logout-btn" class="btn btn-outline-light btn-sm" data-logout-btn="true">
+              Log out
+            </button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="py-5 mt-5">
+    <section class="py-5">
       <div class="container">
-        <a class="navbar-brand d-flex align-items-center gap-2" href="../index.html">
-          <img
-            src="https://i.postimg.cc/HWvz0myL/Logo-The-Nook-Market-redigert-redigert-redigert.webp"
-            alt="The Nook Market logo"
-            class="nook-logo-img"
-          />
-          <span class="nook-logo">The Nook Market</span>
-        </a>
+        <header class="mb-4 text-center">
+          <p class="text-uppercase small text-secondary mb-1">Edit listing</p>
+          <h1 class="h3 mb-2">Tweak your treasure</h1>
+          <p class="text-secondary mb-0">
+            Update the title, description, images or end date of your auction.
+          </p>
+        </header>
 
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#mainNav"
-          aria-controls="mainNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
+        <div class="row justify-content-center">
+          <div class="col-lg-8">
+            <!-- Error / success messages -->
+            <div id="edit-error" class="alert alert-danger d-none" role="alert"></div>
+            <div id="edit-success" class="alert alert-success d-none" role="alert">
+              Listing updated successfully.
+            </div>
 
-        <nav class="collapse navbar-collapse" id="mainNav">
-          <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
-            <li class="nav-item">
-              <a class="nav-link" href="./listings.html">Browse</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="./my-listings.html">My Listings</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="./profile.html">Profile</a>
-            </li>
-
-            <!-- LOGIN / SIGNUP (shown when logged OUT) -->
-            <li class="nav-item ms-lg-3" id="nav-login-item">
-              <a href="./login.html" id="nav-login-link" class="btn btn-outline-light btn-sm">
-                Log in
-              </a>
-            </li>
-            <li class="nav-item ms-2" id="nav-register-item">
-              <a href="./register.html" id="nav-register-link" class="btn btn-primary btn-sm">
-                Sign up
-              </a>
-            </li>
-
-            <!-- CREDITS + LOGOUT (shown when logged IN) -->
-            <li class="nav-item ms-lg-3 d-none" id="nav-credits-item">
-              <span class="badge rounded-pill nook-credits-pill">
-                <span class="small me-1">Credits</span>
-                <span id="nav-credits-amount">0 ✧</span>
-              </span>
-            </li>
-            <li class="nav-item ms-2 d-none" id="nav-logout-item">
-              <button id="nav-logout-btn" class="btn btn-outline-light btn-sm" data-logout-btn="true">
-                Log out
-              </button>
-            </li>
-          </ul>
-        </nav>
-      </div>
-    </header>
-
-    <main class="py-5 mt-5">
-      <section class="py-5">
-        <div class="container">
-          <header class="mb-4 text-center">
-            <p class="text-uppercase small text-secondary mb-1">Edit listing</p>
-            <h1 class="h3 mb-2">Tweak your treasure</h1>
-            <p class="text-secondary mb-0">
-              Update the title, description, images or end date of your auction.
-            </p>
-          </header>
-
-          <div class="row justify-content-center">
-            <div class="col-lg-8">
-              <!-- Error / success messages -->
-              <div id="edit-error" class="alert alert-danger d-none" role="alert"></div>
-              <div id="edit-success" class="alert alert-success d-none" role="alert">
-                Listing updated successfully.
+            <form id="edit-listing-form"
+              class="nook-card-glow p-4 rounded-4 bg-transparent border border-secondary-subtle" novalidate>
+              <div class="mb-3">
+                <label for="edit-title" class="form-label">Title*</label>
+                <input type="text" id="edit-title" class="form-control" required />
               </div>
 
-              <form id="edit-listing-form" class="nook-card-glow p-4 rounded-4 bg-transparent border border-secondary-subtle" novalidate>
-                <div class="mb-3">
-                  <label for="edit-title" class="form-label">Title*</label>
-                  <input type="text" id="edit-title" class="form-control" required />
-                </div>
+              <div class="mb-3">
+                <label for="edit-description" class="form-label">Description</label>
+                <textarea id="edit-description" class="form-control" rows="4"></textarea>
+              </div>
 
-                <div class="mb-3">
-                  <label for="edit-description" class="form-label">Description</label>
-                  <textarea id="edit-description" class="form-control" rows="4"></textarea>
-                </div>
+              <div class="mb-3">
+                <label for="edit-tags" class="form-label">Tags</label>
+                <input type="text" id="edit-tags" class="form-control" placeholder="candle, fantasy, bookish merch" />
+                <div class="form-text">Separate tags with commas.</div>
+              </div>
 
-                <div class="mb-3">
-                  <label for="edit-tags" class="form-label">Tags</label>
-                  <input
-                    type="text"
-                    id="edit-tags"
-                    class="form-control"
-                    placeholder="candle, fantasy, bookish merch"
-                  />
-                  <div class="form-text">Separate tags with commas.</div>
-                </div>
+              <div class="mb-3">
+                <label class="form-label">Images (URLs)</label>
+                <input type="url" class="form-control mb-2 edit-media-url" id="edit-media-1" placeholder="https://…" />
+                <input type="url" class="form-control mb-2 edit-media-url" id="edit-media-2" placeholder="https://…" />
+                <input type="url" class="form-control mb-2 edit-media-url" id="edit-media-3" placeholder="https://…" />
+                <div class="form-text">First image will be used as the main cover.</div>
+              </div>
 
-                <div class="mb-3">
-                  <label class="form-label">Images (URLs)</label>
-                  <input
-                    type="url"
-                    class="form-control mb-2 edit-media-url"
-                    id="edit-media-1"
-                    placeholder="https://…"
-                  />
-                  <input
-                    type="url"
-                    class="form-control mb-2 edit-media-url"
-                    id="edit-media-2"
-                    placeholder="https://…"
-                  />
-                  <input
-                    type="url"
-                    class="form-control mb-2 edit-media-url"
-                    id="edit-media-3"
-                    placeholder="https://…"
-                  />
-                  <div class="form-text">First image will be used as the main cover.</div>
+              <div class="mb-3">
+                <label for="edit-ends-at" class="form-label">Ends at*</label>
+                <input type="datetime-local" id="edit-ends-at" class="form-control" required />
+                <div class="form-text">
+                  Must be in the future. When the time is up, the highest bid wins.
                 </div>
+              </div>
 
-                <div class="mb-3">
-                  <label for="edit-ends-at" class="form-label">Ends at*</label>
-                  <input
-                    type="datetime-local"
-                    id="edit-ends-at"
-                    class="form-control"
-                    required
-                  />
-                  <div class="form-text">
-                    Must be in the future. When the time is up, the highest bid wins.
-                  </div>
-                </div>
+              <div class="d-flex justify-content-between align-items-center mt-4 gap-2">
+                <button type="submit" class="btn btn-primary">
+                  Save changes
+                </button>
 
-                <div class="d-flex justify-content-between align-items-center mt-4 gap-2">
-                  <button type="submit" class="btn btn-primary">
-                    Save changes
-                  </button>
-
-                  <button
-                    type="button"
-                    id="delete-listing-btn"
-                    class="btn btn-outline-danger ms-auto"
-                  >
-                    Delete listing
-                  </button>
-                </div>
-              </form>
-            </div>
+                <button type="button" id="delete-listing-btn" class="btn btn-outline-danger ms-auto">
+                  Delete listing
+                </button>
+              </div>
+            </form>
           </div>
         </div>
-      </section>
-    </main>
+      </div>
+    </section>
+  </main>
 
-    <!-- Bootstrap bundle + your main.js -->
-    <script src="../js/bootstrap.bundle.min.js"></script>
-    <script src="../js/main.js" defer></script>
-  </body>
+  <script src="../js/bootstrap.bundle.min.js"></script>
+  <script src="../js/main.js" defer></script>
+</body>
 </html>

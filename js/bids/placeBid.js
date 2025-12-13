@@ -1,9 +1,10 @@
 // js/bids/placeBid.js
-import { AUCTION_LISTINGS_URL } from "../utils/app.js";
+import { LISTINGS_V2_URL } from "../utils/api.js";
+
+
 import { getAccessToken, getAuthHeaders } from "../utils/storage.js";
 import { refreshAuthProfile } from "../profile/updateProfile.js";
 
-  
 export function setupBidForm(listingId, currentHighestBid) {
   const form = document.querySelector("#bid-form");
   const amountInput = document.querySelector("#bid-amount");
@@ -45,7 +46,7 @@ export function setupBidForm(listingId, currentHighestBid) {
     }
 
     try {
-      const response = await fetch(`${AUCTION_LISTINGS_URL}/${listingId}/bids`, {
+      const response = await fetch(`${LISTINGS_V2_URL}/${listingId}/bids`, {
         method: "POST",
         headers: getAuthHeaders(true),
         body: JSON.stringify({ amount }),

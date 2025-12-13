@@ -1,5 +1,6 @@
 // js/profile/updateProfile.js
-import { API_BASE } from "../utils/app.js";
+import { API_BASE } from "../utils/api.js";
+
 import { getAuth, saveAuth, getAuthHeaders, getAuthUser } from "../utils/storage.js";
 import { hydrateProfileFromAuth } from "./viewProfile.js";
 import { updateNavbarAuthState } from "../ui/renderHeader.js";

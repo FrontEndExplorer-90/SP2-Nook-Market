@@ -21,8 +21,13 @@ import { loadMyBidsPage } from "./bids/getBids.js";
 import { setupLoginForm } from "./auth/loginPage.js";
 import { setupRegisterForm } from "./auth/registerPage.js";
 
+import { requireAuth } from "./utils/authGuard.js";
+
+
 
 document.addEventListener("DOMContentLoaded", async () => {
+  const requiresAuth = document.body.dataset.auth === "required";
+  if (requiresAuth && !requireAuth()) return;
   await ensureApiKeyOnLoad();
 
   bindLogoutButtons();
@@ -48,6 +53,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   loadMyBidsPage();
 
   setupRegisterForm();
-setupLoginForm();
+  setupLoginForm();
 
 });

@@ -115,16 +115,27 @@
 
               <!-- Media URLs -->
               <div class="mb-3">
-                <label class="form-label">Images (URLs)</label>
+                <fieldset>
+                  <legend class="form-label mb-2">Images (URLs)</legend>
 
-                <input type="url" class="form-control mb-2 create-media-url" placeholder="https://..." />
-                <input type="url" class="form-control mb-2 create-media-url" placeholder="https://..." />
-                <input type="url" class="form-control mb-2 create-media-url" placeholder="https://..." />
+                  <label for="create-media-1" class="visually-hidden">Image URL 1</label>
+                  <input type="url" class="form-control mb-2 create-media-url" id="create-media-1"
+                    placeholder="https://…" />
 
-                <div class="form-text">
-                  At least one image is recommended. URLs must be public and valid.
-                </div>
+                  <label for="create-media-2" class="visually-hidden">Image URL 2</label>
+                  <input type="url" class="form-control mb-2 create-media-url" id="create-media-2"
+                    placeholder="https://…" />
+
+                  <label for="create-media-3" class="visually-hidden">Image URL 3</label>
+                  <input type="url" class="form-control mb-2 create-media-url" id="create-media-3"
+                    placeholder="https://…" />
+
+                  <div class="form-text">
+                    At least one image is recommended. URLs must be public and valid.
+                  </div>
+                </fieldset>
               </div>
+
 
               <!-- Ends at -->
               <div class="mb-4">

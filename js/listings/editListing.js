@@ -57,7 +57,7 @@ export async function loadEditListingPage() {
 
     const listing = json.data;
 
-    // Only allow seller to edit
+    
     if (!listing.seller || listing.seller.name !== user.name) {
       if (errorEl) {
         errorEl.textContent = "You can only edit your own listings.";
@@ -69,10 +69,8 @@ export async function loadEditListingPage() {
       return;
     }
 
-    // store listingId for submit handler
     form.dataset.listingId = listing.id;
 
-    // populate fields
     const titleInput = document.querySelector("#edit-title");
     const descInput = document.querySelector("#edit-description");
     const tagsInput = document.querySelector("#edit-tags");
@@ -242,7 +240,7 @@ export function setupEditListingForm() {
     }
   });
 
-  // Delete listing
+
   if (deleteBtn && deleteBtn.dataset.bound !== "true") {
     deleteBtn.dataset.bound = "true";
 

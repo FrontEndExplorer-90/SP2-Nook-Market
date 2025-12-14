@@ -125,7 +125,6 @@ export async function loadSingleListingPage() {
 
     const listing = json.data;
 
-    // show edit button only for seller
     const currentUser = getAuthUser();
     if (editBtn && currentUser && listing.seller?.name === currentUser.name) {
       editBtn.classList.remove("d-none");

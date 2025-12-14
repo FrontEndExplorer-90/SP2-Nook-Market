@@ -95,7 +95,7 @@ export async function loadMyListings() {
         if (sortVal === "highest-bid") {
           return getHighestBidAmount(b) - getHighestBidAmount(a);
         }
-        // default = ending soon
+        
         return new Date(a.endsAt).getTime() - new Date(b.endsAt).getTime();
       });
 

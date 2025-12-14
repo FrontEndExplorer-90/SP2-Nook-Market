@@ -24,7 +24,6 @@ export function setupRegisterForm(formEl = document.querySelector("#register-for
     const confirm = confirmInput?.value.trim() || "";
     const avatarUrl = avatarInput?.value.trim() || "";
 
-    // reset UI
     [nameInput, emailInput, passwordInput, confirmInput, avatarInput].forEach((i) =>
       i?.classList.remove("is-invalid")
     );

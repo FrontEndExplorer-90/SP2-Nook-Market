@@ -1,24 +1,16 @@
-// ============================
-// Nook Market – main.scss
-// ============================
-
-//Overrideing Bootstrap variables *before* importing it
-$body-bg: #050509;            // inky dark
-$body-color: #f5eee3;         // warm parchment
-$primary: #a86ce6;            // enchanted violet
-$secondary: #c9a24d;          // muted gold
+$body-bg: #050509;            
+$body-color: #f5eee3;         
+$primary: #a86ce6;            
+$secondary: #c9a24d;         
 $success: #6fbf7f;
 $danger: #c04747;
 $warning: #d98b3b;
 $info: #5f8fae;
 
-// Fonts
+
 $font-family-sans-serif: "Cormorant Garamond", system-ui, -apple-system, "Segoe UI", sans-serif;
 $font-family-base: $font-family-sans-serif;
 
-//Importing Bootstrap
 @import "../node_modules/bootstrap/scss/bootstrap";
-
-//custom partials
 @import "layout";
 @import "components";

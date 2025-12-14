@@ -7,7 +7,7 @@ Think “fantasy library meets gamer cave” – books, gear, collectibles, and 
 
 ---
 
-## 🧙‍♀️ Tech Stack
+## Tech Stack
 
 - **HTML5** – semantic, accessible structure
 - **CSS3 + Bootstrap 5.3** – layout + components, with custom theme and utility classes
@@ -17,7 +17,7 @@ Think “fantasy library meets gamer cave” – books, gear, collectibles, and 
 
 ---
 
-## ✨ Core Features (mapped to SP2 brief)
+## Core Features (mapped to SP2 brief)
 
 ### Authentication
 
@@ -104,7 +104,7 @@ Think “fantasy library meets gamer cave” – books, gear, collectibles, and 
 
 ---
 
-## 🗺️ Pages Overview
+##  Pages Overview
 
 - `/index.html`  
   Landing page with:
@@ -138,7 +138,7 @@ Think “fantasy library meets gamer cave” – books, gear, collectibles, and 
 
 ---
 
-## 🧩 Architecture & Structure
+## Architecture & Structure
 
 ### Folder Structure
 

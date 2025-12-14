@@ -29,7 +29,6 @@ export function setupCreateListingForm() {
     return;
   }
 
-  // Set minimum end date to now (local)
   if (endsAtInput) {
     const now = new Date();
     const localISO = new Date(now.getTime() - now.getTimezoneOffset() * 60000)

@@ -20,7 +20,5 @@ export const AUCTION_LISTINGS_URL = LISTINGS_V2_URL;
 export const AUTH_CREATE_API_KEY = API_KEY_V2_URL;
 export const PROFILES_BASE = PROFILES_V2_URL;
 
-// Optional: if any UI code expects a fallback image constant
 export const FALLBACK_IMAGE =
   "https://via.placeholder.com/800x500?text=No+image";
-

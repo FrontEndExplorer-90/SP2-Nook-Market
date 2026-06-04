@@ -64,37 +64,67 @@ export function createListingCard(listing) {
 
   const endsLabel = getEndsLabel(listing.endsAt);
 
-  return `
-    <div class="col-md-6 col-lg-3">
-      <article class="card h-100 nook-card-hover bg-transparent border border-secondary-subtle">
-        <img
-          src="${url}"
-          class="card-img-top nook-listing-image"
-          alt="${alt}"
-          loading="lazy"
-        />
-        <div class="card-body d-flex flex-column">
-          <p class="small text-secondary text-uppercase mb-1">${tag}</p>
-          <h3 class="h6 mb-2">${listing.title || "Untitled listing"}</h3>
-          <p class="small text-secondary flex-grow-1">
-            ${truncateText(listing.description || "")}
-          </p>
-          <div class="d-flex justify-content-between align-items-center mt-2">
-            <span class="fw-semibold">${credits} ✧</span>
-            <a href="./listing.html?id=${listing.id}" class="btn btn-outline-light btn-sm">
-              View details
-            </a>
-          </div>
-          ${
-            endsLabel
-              ? `<p class="small text-secondary mt-2 mb-0">${endsLabel}</p>`
-              : ""
-          }
-        </div>
-      </article>
+  const bidCount = Array.isArray(listing.bids)
+    ? listing.bids.length
+    : 0;
+
+  const endingSoon =
+    endsLabel === "Ends today" ||
+    endsLabel === "Ends tomorrow";
+
+  return ` <div class="col-md-6 col-lg-3"> <article class="card h-100 nook-card-hover bg-transparent border border-secondary-subtle"> <img
+       src="${url}"
+       class="card-img-top nook-listing-image"
+       alt="${alt}"
+       loading="lazy"
+     />
+
+    <div class="card-body d-flex flex-column">
+      <p class="small text-secondary text-uppercase mb-1">${tag}</p>
+
+      <h3 class="h6 mb-2">
+        ${listing.title || "Untitled listing"}
+      </h3>
+
+      <p class="small text-secondary flex-grow-1">
+        ${truncateText(listing.description || "")}
+      </p>
+
+      <div class="d-flex flex-wrap gap-2 mb-3">
+        ${endingSoon
+      ? `
+              <span class="badge text-bg-danger">
+                🔥 Ending Soon
+              </span>
+            `
+      : `
+              <span class="badge text-bg-secondary">
+                ⏳ ${endsLabel}
+              </span>
+            `
+    }
+
+        <span class="badge text-bg-dark">
+          🏆 ${bidCount} bids
+        </span>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mt-2">
+        <span class="fw-semibold">${credits} ✧</span>
+
+        <a
+          href="./listing.html?id=${listing.id}"
+          class="btn btn-outline-light btn-sm"
+        >
+          View details
+        </a>
+      </div>
     </div>
-  `;
+  </article>
+</div>
+`;
 }
+
 
 export function createMyListingCard(listing) {
   const { url, alt } = getPrimaryImage(listing);

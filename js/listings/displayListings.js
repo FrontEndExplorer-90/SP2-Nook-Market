@@ -203,7 +203,7 @@ export async function loadSingleListingPage() {
 
       if (!bids.length) {
         bidsListEl.innerHTML =
-          '<li class="small text-secondary">No bids yet. Be the first.</li>';
+          '<li class="small text-secondary">🏺 No bids yet. Be the first collector.</li>';
       } else {
         const sorted = [...bids].sort(
           (a, b) => new Date(a.created) - new Date(b.created)

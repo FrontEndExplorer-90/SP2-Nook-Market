@@ -1,3 +1,5 @@
+Note: This project was revisited and improved as part of the Portfolio 2 assessment.
+
 # The Nook Market – Semester Project 2
 
 The Nook Market is a cozy, fantasy-inspired auction site built for Noroff’s Auction API (v2).  
@@ -142,7 +144,7 @@ Think “fantasy library meets gamer cave” – books, gear, collectibles, and 
 
 ### Folder Structure
 
-```text
+text
 root/
   index.html
   /pages
@@ -159,4 +161,17 @@ root/
     main.css
   /js
     main.js
+
+
+## Portfolio 2 Updates
+
+The following improvements were made after the original submission:
+
+* Improved responsive layouts and visual consistency across the application.
+* Refined listing presentation and user interface styling.
+* Improved bid display and listing information presentation.
+* Enhanced project documentation and repository organization.
+* Reviewed user experience and accessibility considerations throughout the project.
+
+These updates were completed to demonstrate continued development and improvements made after the original project submission.
 
